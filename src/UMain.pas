@@ -11,41 +11,33 @@ uses
 type
   TForm1 = class(TForm)
     Panel1: TPanel;
-    Memo1: TMemo;
-    StringGrid1: TStringGrid;
-    ComboBox1: TComboBox;
     Panel2: TPanel;
+    Panel3: TPanel;
+    Memo1: TMemo;
+    ComboBoxMode: TComboBox;
+    ComboBoxStructure: TComboBox;
     Label1: TLabel;
     Label2: TLabel;
-    Label3: TLabel;
-    MainMenu1: TMainMenu;
-    N1: TMenuItem;
-    tht1: TMenuItem;
-    N2: TMenuItem;
-    N3: TMenuItem;
-    N4: TMenuItem;
-    N5: TMenuItem;
-    N6: TMenuItem;
-    N7: TMenuItem;
-    N8: TMenuItem;
-    N9: TMenuItem;
-    N10: TMenuItem;
-    N11: TMenuItem;
-    Panel3: TPanel;
-    Button6: TButton;
-    Button7: TButton;
-    Button8: TButton;
-    Button1: TButton;
-    ComboBox2: TComboBox;
     Label4: TLabel;
     Label5: TLabel;
-    BitBtn1: TBitBtn;
+    Label3: TLabel;
+    ButtonAddAfter: TButton;
+    ButtonAddFirst: TButton;
+    ButtonAddBefore: TButton;
+    ButtonDelete: TButton;
+    ButtonNext: TBitBtn;
+    StringGrid1: TStringGrid;
     StringGrid2: TStringGrid;
     procedure FormCreate(Sender: TObject);
-    procedure ComboBox1Change(Sender: TObject);
-    procedure ComboBox2Change(Sender: TObject);
-    procedure Button7Click(Sender: TObject);
-    function Add: integer;
+    procedure ComboBoxStructureChange(Sender: TObject);
+    procedure ComboBoxModeChange(Sender: TObject);
+    procedure ButtonAddFirstClick(Sender: TObject);
+    // Обработчик события MyEvent для объектов, принадлежащих типу TMyClass.
+    procedure OnThreadSyspended(Sender: TObject);
+    procedure ButtonNextClick(Sender: TObject);
+    procedure ButtonAddAfterClick(Sender: TObject);
+    procedure ButtonAddBeforeClick(Sender: TObject);
+    procedure ButtonDeleteClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -55,85 +47,141 @@ type
 var
   Form1: TForm1;
   List: TArrayList;
+  RowTemp: integer;
 
 implementation
 
 {$R *.dfm}
 
-function TForm1.Add: integer;
+// Обработчик события ThreadSyspended  - когда отсановили поток
+procedure TForm1.OnThreadSyspended(Sender: TObject);
 var
-  i, j, row: integer;
-  flag: boolean;
+  i: integer;
 begin
-  // with StringGrid1 do
-  // for i := 0 to RowCount - 1 do
-  // begin
-  // flag := true;
-  // for j := 0 to ColCount - 1 do
-  // if Cells[j, i] <> '' then
-  // begin
-  // flag := false;
-  // break;
-  // end;
-  // if flag = true then
-  // begin
-  // break;
-  // end;
-  // end;
-  // if flag = true then
-  // begin
-  // row := i;
-  // result := row;
-  // end
-  // else
-  // result := -1;
+  // if not(Sender is TArrayList) then
+  // Exit;
+  for i := 1 to List.GetMaxCount do
+    StringGrid1.Cells[i - 1, RowTemp] := List.GetItem(i);
 end;
 
-procedure TForm1.Button7Click(Sender: TObject);
+procedure TForm1.ButtonNextClick(Sender: TObject);
 var
-  t: integer;
-var
-  rowIndex, j: integer;
-  k: string;
-  El: TArrayList;
-  a, m, n: integer;
+  i: integer;
 begin
-  // rowIndex := Add;
-  // if rowIndex = -1 then
-  // begin
-  // showMessage('Отсутствуют свободные строки!');
-  // exit;
-  // end;
-  //
-  // a := 0;
-  // with StringGrid1 do
-  // for j := 0 to ColCount - 1 do
-  //
-  // begin
-  // a := a + 1;
-  // k := InputBox('Новый элемент', 'Введите значение элемента:', '1');
-  // El := TArrayList.Create(k);
-  // LElement[a] := El;
-  // Cells[j, rowIndex] := LElement[a].GetInfo;
-  //
-  // end;
+  for i := 1 to List.GetCount do
+    StringGrid1.Cells[i - 1, RowTemp] := List.GetItem(i);
 end;
 
-procedure TForm1.ComboBox1Change(Sender: TObject);
+procedure TForm1.ButtonAddAfterClick(Sender: TObject);
+var
+  sNewValue, sAfterValue: string;
+  iNewValue, iAfterValue: integer;
 begin
-  if ComboBox1.ItemIndex = 0 then
-    ComboBox2.Enabled := true;
+  // перехватим конверсионные ошибки
+  try
+    sNewValue := InputBox('Добавление нового элемента',
+      'Введите номер нового эламента', '5');
+
+    Trim(sNewValue);
+    iNewValue := StrToInt(sNewValue);
+
+    sAfterValue := InputBox('Добавление нового элемента',
+      'Перед каким добавить', '10');
+
+    Trim(sAfterValue);
+    iAfterValue := StrToInt(sAfterValue);
+
+    List.AddAfter(iNewValue, iAfterValue);
+
+    Inc(RowTemp);
+  except
+    on Exception: EConvertError do
+      ShowMessage(Exception.Message);
+  end;
+end;
+
+procedure TForm1.ButtonAddFirstClick(Sender: TObject);
+var
+  sValue: string;
+  iValue: integer;
+begin
+  sValue := InputBox('Добавление нового элемента', 'Введите номер', '5');
+
+  // перехватим конверсионные ошибки
+  try
+    Trim(sValue);
+    iValue := StrToInt(sValue);
+
+    List.AddFirst(iValue);
+    Inc(RowTemp);
+  except
+    on Exception: EConvertError do
+      ShowMessage(Exception.Message);
+  end;
+end;
+
+procedure TForm1.ButtonDeleteClick(Sender: TObject);
+var
+  sValue: string;
+  iValue: integer;
+begin
+  sValue := InputBox('Удаление элемента', 'Введите номер', '5');
+  // перехватим конверсионные ошибки
+  try
+    Trim(sValue);
+    iValue := StrToInt(sValue);
+
+    List.Delete(iValue);
+    Inc(RowTemp);
+  except
+    on Exception: EConvertError do
+      ShowMessage(Exception.Message);
+  end;
+end;
+
+procedure TForm1.ButtonAddBeforeClick(Sender: TObject);
+var
+  sNewValue, sBeforeValue: string;
+  iNewValue, iBeforeValue: integer;
+begin
+  // перехватим конверсионные ошибки
+  try
+    sNewValue := InputBox('Добавление нового элемента',
+      'Введите номер нового эламента', '5');
+
+    Trim(sNewValue);
+    iNewValue := StrToInt(sNewValue);
+
+    sBeforeValue := InputBox('Добавление нового элемента',
+      'Перед каким добавить', '10');
+
+    Trim(sBeforeValue);
+    iBeforeValue := StrToInt(sBeforeValue);
+
+    List.AddBefore(iNewValue, iBeforeValue);
+
+    Inc(RowTemp);
+  except
+    on Exception: EConvertError do
+      ShowMessage(Exception.Message);
+  end;
+end;
+
+procedure TForm1.ComboBoxStructureChange(Sender: TObject);
+begin
+  if ComboBoxStructure.ItemIndex = 0 then
+    ComboBoxMode.Enabled := true;
 
 end;
 
-procedure TForm1.ComboBox2Change(Sender: TObject);
+procedure TForm1.ComboBoxModeChange(Sender: TObject);
 begin
-  if ComboBox2.ItemIndex = 0 then
-    Button1.Enabled := true;
-  Button7.Enabled := true;
-  Button8.Enabled := true;
-  Button6.Enabled := true;
-  BitBtn1.Enabled := true;
+  if ComboBoxMode.ItemIndex = 0 then
+    ButtonDelete.Enabled := true;
+  ButtonAddFirst.Enabled := true;
+  ButtonAddBefore.Enabled := true;
+  ButtonAddAfter.Enabled := true;
+  ButtonNext.Enabled := true;
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
@@ -142,13 +190,14 @@ var
 begin
 
   List := TArrayList.Create;
+  // подписываемся на событие ThreadSyspended
+  List.OnThreadSyspended := OnThreadSyspended;
 
-  Button1.Enabled := false;
-  Button7.Enabled := false;
-  Button8.Enabled := false;
-  Button6.Enabled := false;
-  BitBtn1.Enabled := false;
-  ComboBox2.Enabled := false;
+  RowTemp := -1;
+
+  ButtonDelete.Enabled := false;
+
+  ComboBoxMode.Enabled := false;
 
   StringGrid2.Cells[0, 0] := '1';
   StringGrid2.Cells[1, 0] := '2';
