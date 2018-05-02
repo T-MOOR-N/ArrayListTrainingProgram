@@ -4,7 +4,7 @@ object Form1: TForm1
   BorderStyle = bsSingle
   Caption = #1058#1088#1077#1085#1072#1078#1077#1088#1085#1072#1103' '#1087#1088#1086#1075#1088#1072#1084#1084#1072
   ClientHeight = 680
-  ClientWidth = 816
+  ClientWidth = 1018
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,14 +18,13 @@ object Form1: TForm1
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 816
+    Width = 1018
     Height = 680
     Align = alClient
     Color = clMenu
     ParentBackground = False
     TabOrder = 0
-    ExplicitWidth = 812
-    ExplicitHeight = 660
+    ExplicitWidth = 816
     object Label4: TLabel
       Left = 8
       Top = 113
@@ -55,13 +54,13 @@ object Form1: TForm1
     object Panel2: TPanel
       Left = 316
       Top = 8
-      Width = 485
+      Width = 685
       Height = 99
-      TabOrder = 3
+      TabOrder = 2
       object Label1: TLabel
         Left = 8
         Top = 0
-        Width = 468
+        Width = 553
         Height = 34
         Caption = 
           #1055#1088#1086#1075#1088#1072#1084#1084#1072' '#1086#1073#1091#1095#1072#1077#1090' '#1080#1089#1087#1086#1083#1100#1079#1086#1074#1072#1085#1080#1102' '#1083#1080#1085#1077#1081#1085#1099#1093' '#1089#1087#1080#1089#1082#1086#1074#1099#1093' '#1089#1090#1088#1091#1082#1090#1091#1088' '#1076#1072#1085#1085 +
@@ -77,7 +76,7 @@ object Form1: TForm1
       object Label2: TLabel
         Left = 8
         Top = 40
-        Width = 442
+        Width = 545
         Height = 34
         Caption = 
           '1) '#1053#1077#1091#1087#1086#1088#1103#1076#1086#1095#1077#1085#1085#1099#1081' '#1089#1087#1080#1089#1086#1082' '#1089' '#1074#1086#1079#1084#1086#1078#1085#1086#1089#1090#1100#1102' '#1076#1086#1073#1072#1074#1083#1077#1085#1080#1103' '#1074' '#1083#1102#1073#1086#1077' '#1079#1072#1076#1072 +
@@ -93,7 +92,7 @@ object Form1: TForm1
       object Label3: TLabel
         Left = 8
         Top = 73
-        Width = 467
+        Width = 497
         Height = 17
         Caption = 
           '2) '#1059#1087#1086#1088#1103#1076#1086#1095#1077#1085#1085#1099#1081' '#1089#1087#1080#1089#1086#1082' '#1085#1072' '#1086#1089#1085#1086#1074#1077' '#1086#1095#1077#1088#1077#1076#1080' '#1089' '#1080#1089#1087#1086#1083#1100#1079#1086#1074#1072#1085#1080#1077#1084' '#1087#1088#1080#1086#1088 +
@@ -107,22 +106,8 @@ object Form1: TForm1
         WordWrap = True
       end
     end
-    object Memo1: TMemo
-      Left = 303
-      Top = 166
-      Width = 498
-      Height = 516
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -13
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      HideSelection = False
-      ParentFont = False
-      ReadOnly = True
-      TabOrder = 0
-    end
-    object StringGrid1: TStringGrid
+    object MyStringGrid: TStringGrid
+      AlignWithMargins = True
       Left = 8
       Top = 166
       Width = 289
@@ -135,8 +120,15 @@ object Form1: TForm1
       FixedCols = 0
       RowCount = 6
       FixedRows = 0
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
       GridLineWidth = 3
-      TabOrder = 1
+      ParentFont = False
+      TabOrder = 0
+      OnDrawCell = MyStringGridDrawCell
       ColWidths = (
         44
         44
@@ -163,7 +155,7 @@ object Form1: TForm1
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      TabOrder = 2
+      TabOrder = 1
       Text = #1042#1099#1073#1077#1088#1080#1090#1077' '#1089#1090#1088#1091#1082#1090#1091#1088#1091
       OnChange = ComboBoxStructureChange
       Items.Strings = (
@@ -175,13 +167,14 @@ object Form1: TForm1
       Top = 501
       Width = 289
       Height = 153
-      TabOrder = 4
+      TabOrder = 3
       object ButtonAddAfter: TButton
         Left = 17
         Top = 117
         Width = 112
         Height = 25
         Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1087#1086#1089#1083#1077
+        Enabled = False
         TabOrder = 0
         OnClick = ButtonAddAfterClick
       end
@@ -191,6 +184,7 @@ object Form1: TForm1
         Width = 112
         Height = 25
         Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+        Enabled = False
         TabOrder = 1
         OnClick = ButtonAddFirstClick
       end
@@ -200,6 +194,7 @@ object Form1: TForm1
         Width = 112
         Height = 25
         Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1076#1086
+        Enabled = False
         TabOrder = 2
         OnClick = ButtonAddBeforeClick
       end
@@ -209,6 +204,7 @@ object Form1: TForm1
         Width = 112
         Height = 25
         Caption = #1059#1076#1072#1083#1080#1090#1100
+        Enabled = False
         TabOrder = 3
         OnClick = ButtonDeleteClick
       end
@@ -218,6 +214,7 @@ object Form1: TForm1
         Width = 112
         Height = 25
         Caption = '>>'
+        Enabled = False
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -241,7 +238,7 @@ object Form1: TForm1
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      TabOrder = 5
+      TabOrder = 4
       Text = #1042#1099#1073#1077#1088#1080#1090#1077' '#1088#1077#1078#1080#1084
       OnChange = ComboBoxModeChange
       Items.Strings = (
@@ -266,7 +263,7 @@ object Form1: TForm1
       Font.Style = [fsBold]
       GridLineWidth = 3
       ParentFont = False
-      TabOrder = 6
+      TabOrder = 5
       ColWidths = (
         44
         44
@@ -276,6 +273,19 @@ object Form1: TForm1
         44)
       RowHeights = (
         24)
+    end
+    object ListBox: TListBox
+      Left = 316
+      Top = 138
+      Width = 685
+      Height = 516
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 6
     end
   end
 end

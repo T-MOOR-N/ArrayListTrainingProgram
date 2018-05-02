@@ -6,14 +6,13 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Grids, Vcl.ExtCtrls,
-  Vcl.Menus, Vcl.Buttons, Vcl.Imaging.pngimage, Vcl.XPMan, UArrayList;
+  Vcl.Menus, Vcl.Buttons, Vcl.Imaging.pngimage, Vcl.XPMan, UArrayList, WinProcs;
 
 type
   TForm1 = class(TForm)
     Panel1: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
-    Memo1: TMemo;
     ComboBoxMode: TComboBox;
     ComboBoxStructure: TComboBox;
     Label1: TLabel;
@@ -26,8 +25,9 @@ type
     ButtonAddBefore: TButton;
     ButtonDelete: TButton;
     ButtonNext: TBitBtn;
-    StringGrid1: TStringGrid;
+    MyStringGrid: TStringGrid;
     StringGrid2: TStringGrid;
+    ListBox: TListBox;
     procedure FormCreate(Sender: TObject);
     procedure ComboBoxStructureChange(Sender: TObject);
     procedure ComboBoxModeChange(Sender: TObject);
@@ -38,6 +38,10 @@ type
     procedure ButtonAddAfterClick(Sender: TObject);
     procedure ButtonAddBeforeClick(Sender: TObject);
     procedure ButtonDeleteClick(Sender: TObject);
+    procedure MyStringGridDrawCell(Sender: TObject; ACol, ARow: Integer;
+      Rect: TRect; State: TGridDrawState);
+    procedure Updater();
+
   private
     { Private declarations }
   public
@@ -45,23 +49,88 @@ type
   end;
 
 var
-  Form1: TForm1;
+  FormMain: TForm1;
   List: TArrayList;
-  RowTemp: integer;
+  RowTemp: Integer;
 
 implementation
 
 {$R *.dfm}
 
+procedure TForm1.Updater();
+begin
+  ListBox.ItemIndex := ListBox.Items.Count - 1;
+  if ListBox.ItemIndex > 0 then
+    if ListBox.Items[ListBox.ItemIndex] = '' then
+      ListBox.ItemIndex := -1;
+
+  if MyStringGrid.RowCount < RowTemp then
+    MyStringGrid.RowCount := RowTemp + 1;
+
+  if not(List.State = lsNormal) then
+  begin
+    ButtonAddAfter.Enabled := false;
+    ButtonAddFirst.Enabled := false;
+    ButtonAddBefore.Enabled := false;
+    ButtonDelete.Enabled := false;
+    ButtonNext.Enabled := true;
+  end
+  else
+  begin
+    if List.GetCount = 0 then
+      ButtonAddFirst.Enabled := true;
+    if List.GetCount > 0 then
+    begin
+      ButtonAddAfter.Enabled := true;
+      ButtonAddBefore.Enabled := true;
+      ButtonDelete.Enabled := true;
+    end;
+    ButtonNext.Enabled := false;
+  end;
+  if ButtonNext.CanFocus then
+    ButtonNext.SetFocus;
+end;
+
 // ќбработчик событи€ ThreadSyspended  - когда отсановили поток
 procedure TForm1.OnThreadSyspended(Sender: TObject);
 var
-  i: integer;
+  i: Integer;
 begin
   // if not(Sender is TArrayList) then
   // Exit;
   for i := 1 to List.GetMaxCount do
-    StringGrid1.Cells[i - 1, RowTemp] := List.GetItem(i);
+    MyStringGrid.Cells[i - 1, RowTemp] := List.GetItem(i);
+
+  Updater();
+end;
+
+procedure TForm1.MyStringGridDrawCell(Sender: TObject; ACol, ARow: Integer;
+  Rect: TRect; State: TGridDrawState);
+var
+  txt: string;
+begin
+  // центруем текст в €чейках
+  with MyStringGrid do
+  begin
+    txt := Cells[ACol, ARow];
+    Canvas.FillRect(Rect);
+    Canvas.TextRect(Rect, txt, [tfVerticalCenter, tfCenter, tfSingleLine]);
+  end;
+
+  // вывод текста
+  // begin
+  // if (ACol > 6) and (ARow = RowTemp) then
+  // begin // первый столбец и строку оставл€ем без изменений
+  // if (ACol = 1) or (ACol = 3) then
+  // MyStringGrid.Canvas.Brush.Color := clBlue;
+  //
+  // // ToDo: закрашивание €чеек в зависимости от текущего состо€ние€ списка
+  //
+  // MyStringGrid.Canvas.FillRect(Rect);
+  // MyStringGrid.Canvas.Font.Color := clBlack;
+  // MyStringGrid.Canvas.TextOut(Rect.Left, Rect.Top,
+  // MyStringGrid.Cells[ACol, ARow]);
+  // end;
 end;
 
 procedure TForm1.ButtonNextClick(Sender: TObject);
@@ -72,12 +141,14 @@ procedure TForm1.ButtonNextClick(Sender: TObject);
 // StringGrid1.Cells[i - 1, RowTemp] := List.GetItem(i);
 begin
   List.NextStep;
+  if List.IsMove then
+    Inc(RowTemp);
 end;
 
 procedure TForm1.ButtonAddAfterClick(Sender: TObject);
 var
   sNewValue, sAfterValue: string;
-  iNewValue, iAfterValue: integer;
+  iNewValue, iAfterValue: Integer;
 begin
   // перехватим конверсионные ошибки
   try
@@ -105,7 +176,7 @@ end;
 procedure TForm1.ButtonAddFirstClick(Sender: TObject);
 var
   sValue: string;
-  iValue: integer;
+  iValue: Integer;
 begin
   sValue := InputBox('ƒобавление нового элемента', '¬ведите номер', '5');
 
@@ -125,7 +196,7 @@ end;
 procedure TForm1.ButtonDeleteClick(Sender: TObject);
 var
   sValue: string;
-  iValue: integer;
+  iValue: Integer;
 begin
   sValue := InputBox('”даление элемента', '¬ведите номер', '5');
   // перехватим конверсионные ошибки
@@ -144,7 +215,7 @@ end;
 procedure TForm1.ButtonAddBeforeClick(Sender: TObject);
 var
   sNewValue, sBeforeValue: string;
-  iNewValue, iBeforeValue: integer;
+  iNewValue, iBeforeValue: Integer;
 begin
   // перехватим конверсионные ошибки
   try
@@ -207,9 +278,9 @@ begin
   StringGrid2.Cells[3, 0] := '4';
   StringGrid2.Cells[4, 0] := '5';
   StringGrid2.Cells[5, 0] := '6';
-  StringGrid1.Options := StringGrid1.Options - [goEditing];
-  StringGrid2.Options := StringGrid1.Options - [goEditing];
-  StringGrid2.Options := StringGrid1.Options - [goDrawFocusSelected,
+  MyStringGrid.Options := MyStringGrid.Options - [goEditing];
+  StringGrid2.Options := MyStringGrid.Options - [goEditing];
+  StringGrid2.Options := MyStringGrid.Options - [goDrawFocusSelected,
     goRowMoving, goColMoving, goRowSelect];
   with myRect do
   begin
@@ -219,7 +290,9 @@ begin
     Bottom := -1;
   end;
   StringGrid2.Selection := myRect;
-  StringGrid1.Selection := myRect;
+  MyStringGrid.Selection := myRect;
+
+  Updater();
 end;
 
 end.
