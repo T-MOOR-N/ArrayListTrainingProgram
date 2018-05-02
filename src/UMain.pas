@@ -65,11 +65,13 @@ begin
 end;
 
 procedure TForm1.ButtonNextClick(Sender: TObject);
-var
-  i: integer;
+// var
+// i: integer;
+// begin
+// for i := 1 to List.GetCount do
+// StringGrid1.Cells[i - 1, RowTemp] := List.GetItem(i);
 begin
-  for i := 1 to List.GetCount do
-    StringGrid1.Cells[i - 1, RowTemp] := List.GetItem(i);
+  List.NextStep;
 end;
 
 procedure TForm1.ButtonAddAfterClick(Sender: TObject);
@@ -86,7 +88,7 @@ begin
     iNewValue := StrToInt(sNewValue);
 
     sAfterValue := InputBox('Добавление нового элемента',
-      'Перед каким добавить', '10');
+      'После какого добавить', '10');
 
     Trim(sAfterValue);
     iAfterValue := StrToInt(sAfterValue);

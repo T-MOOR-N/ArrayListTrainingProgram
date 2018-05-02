@@ -25,11 +25,11 @@ type
     // класса, а не произвольную процедуру.
     FOnThreadSuspended: TNotifyEvent;
 
-    Procedure _AddFirst();
-    Procedure _AddAfter();
-    Procedure _AddBefore();
+    Procedure AddFirstTask();
+    Procedure AddAfterTask();
+    Procedure AddBeforeTask();
     Function _Search(aName: integer): integer;
-    Procedure _Delete();
+    Procedure DeleteTask();
     procedure Pause();
     procedure Finish();
   Public
@@ -61,6 +61,9 @@ type
   End;
 
 implementation
+
+uses
+  UMain;
 
 var
   CritSec: TCriticalSection; // объект критической секции
@@ -106,7 +109,7 @@ var
 begin
   State := lsAddFirst;
   NewItem := iNewValue;
-  ThreadId := BeginThread(nil, 0, @TArrayList._AddFirst, Self, 0, id);
+  ThreadId := BeginThread(nil, 0, @TArrayList.AddFirstTask, Self, 0, id);
 end;
 
 function TArrayList.AddAfter(iNewValue: integer; iSearchValue: integer)
@@ -118,7 +121,7 @@ begin
   NewItem := iNewValue;
   SearchItem := iSearchValue;
   State := lsAddAfter;
-  ThreadId := BeginThread(nil, 0, @TArrayList._AddAfter, Self, 0, id);
+  ThreadId := BeginThread(nil, 0, @TArrayList.AddAfterTask, Self, 0, id);
 end;
 
 function TArrayList.AddBefore(iNewValue: integer;
@@ -129,7 +132,7 @@ begin
   NewItem := iNewValue;
   SearchItem := iSearchValue;
   State := lsAddbefore;
-  ThreadId := BeginThread(nil, 0, @TArrayList._AddBefore, Self, 0, id);
+  ThreadId := BeginThread(nil, 0, @TArrayList.AddBeforeTask, Self, 0, id);
 end;
 
 Function TArrayList.Delete(value: integer): boolean;
@@ -138,46 +141,88 @@ var
 begin
   State := lsDelete;
   SearchItem := value;
-  ThreadId := BeginThread(nil, 0, @TArrayList._Delete, Self, 0, id);
+  ThreadId := BeginThread(nil, 0, @TArrayList.DeleteTask, Self, 0, id);
 end;
 
 {$ENDREGION}
 {$ENDREGION}
-{$REGION 'Thread functions'}
+{$REGION 'Task functions'}
 
-Procedure TArrayList._AddFirst();
+Procedure TArrayList.AddFirstTask();
 begin
   CritSec.Enter;
   if Count = 0 then
   begin
+    Form1.Memo1.Lines.Add('Добавление в список первого элемента ' +
+      IntToStr(NewItem) + ' (COUNT = ' + Count.ToString + ')');
+    Pause();
+
+    Form1.Memo1.Lines.Add('1) Вставка: заносим значение ' + NewItem.ToString +
+      ' в ячейку [1];');
     Items[1] := NewItem;
+    Pause();
+
+    Form1.Memo1.Lines.Add('2) Увеличение COUNT на 1:' + ' COUNT = ' +
+      Count.ToString + ' + 1 = ' + IntToStr(Count + 1) + ';');
     Inc(Count);
   end;
   Finish();
 end;
 
-Procedure TArrayList._AddAfter();
+Procedure TArrayList.AddAfterTask();
 var
   i, j: integer;
 begin
   CritSec.Enter;
 
+  Form1.Memo1.Lines.Add('Вставка в список элемента  ' + NewItem.ToString +
+    ' после ' + SearchItem.ToString + ' (COUNT = ' + Count.ToString + ')');
+  Pause();
+
   if Count = 0 then
     Finish();
   if Count = Max then
+  begin
+    Form1.Memo1.Lines.Add('1) Проверка возможности вставки: Список заполнен;');
     Finish();
+  end;
+
+  Form1.Memo1.Lines.Add('1) Проверка возможности вставки: ОК;');
+  Pause();
+
   j := _Search(SearchItem);
   if j = 0 then
     Finish();
   Inc(Count);
+
+  Form1.Memo1.Lines.Add
+    ('Х) Сдвиг ячеек вправо: перемещаем вправо содержимое ячеек начиная с ячейки ['
+    + (Count - 1).ToString + '];');
+  Pause();
+
   for i := Count downto j do
+  begin
     Items[i + 1] := Items[i];
+
+    Form1.Memo1.Lines.Add
+      ('Х) Сдвиг текущей вправо: перемещаем содержимое ячейки [' + i.ToString +
+      '] в ячейку [' + (i + 1).ToString + '];');
+    Pause();
+  end;
+
   Items[j + 1] := NewItem;
+  Form1.Memo1.Lines.Add('Х) Вставка: заносим значение ' + NewItem.ToString +
+    ' в ячейку [' + j.ToString + '];');
+  Pause();
+
+  Form1.Memo1.Lines.Add('2) Увеличение COUNT на 1:' + ' COUNT = ' +
+    Count.ToString + ' + 1 = ' + IntToStr(Count + 1) + ';');
+  // Inc(Count);
 
   Finish();
 end;
 
-procedure TArrayList._AddBefore();
+procedure TArrayList.AddBeforeTask();
 var
   i, j: integer;
 begin
@@ -198,10 +243,12 @@ begin
   Finish();
 end;
 
-procedure TArrayList._Delete();
+procedure TArrayList.DeleteTask();
 var
   i, j: integer;
 begin
+  CritSec.Enter;
+
   if Count = 0 then
     Finish();
   j := _Search(SearchItem);
@@ -211,24 +258,53 @@ begin
   Count := Count - 1;
   for i := j to Count do
     Items[i] := Items[i + 1];
+
   Finish();
 end;
 
 Function TArrayList._Search(aName: integer): integer;
 var
-  i: integer;
+  i, counter: integer;
 begin
+  counter := 3;
   result := 0;
+
+  Form1.Memo1.Lines.Add('2) Поиск введенного пользователем значения: ' +
+    SearchItem.ToString + ';');
+  Pause();
+
   for i := 1 to Count do
+  begin
     if (aName = Items[i]) then
     begin
       result := i;
       break;
     end;
+    Form1.Memo1.Lines.Add(counter.ToString +
+      ') Продолжаем поиск, проверяем очередную ячейку: [' + i.ToString + '] <>'
+      + SearchItem.ToString + ' , переходим к следующей ячейке;');
+    Pause();
+    Inc(counter);
+  end;
+
+  if result <> 0 then
+  begin
+    Form1.Memo1.Lines.Add(counter.ToString +
+      ') Продолжаем поиск, проверяем очередную ячейку: элемент найден, [' +
+      i.ToString + '] == ' + SearchItem.ToString + ' , конец поиска;');
+    Pause();
+  end
+  else
+  begin
+    Form1.Memo1.Lines.Add(counter.ToString +
+      ') Продолжаем поиск, проверяем очередную ячейку: Конец списка! Элемент не найден;');
+    Pause();
+  end;
 end;
 
 procedure TArrayList.Finish();
 begin
+  Form1.Memo1.Lines.Add('');
   State := lsNormal;
   GenericMyEvent;
   CritSec.Leave;
