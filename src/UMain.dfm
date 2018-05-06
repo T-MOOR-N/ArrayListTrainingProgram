@@ -3,7 +3,7 @@ object Form1: TForm1
   Top = 0
   BorderStyle = bsSingle
   Caption = #1058#1088#1077#1085#1072#1078#1077#1088#1085#1072#1103' '#1087#1088#1086#1075#1088#1072#1084#1084#1072
-  ClientHeight = 680
+  ClientHeight = 718
   ClientWidth = 1018
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -19,12 +19,12 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 1018
-    Height = 680
+    Height = 718
     Align = alClient
     Color = clMenu
     ParentBackground = False
     TabOrder = 0
-    ExplicitWidth = 816
+    ExplicitHeight = 680
     object Label4: TLabel
       Left = 8
       Top = 113
@@ -60,7 +60,7 @@ object Form1: TForm1
       object Label1: TLabel
         Left = 8
         Top = 0
-        Width = 553
+        Width = 524
         Height = 34
         Caption = 
           #1055#1088#1086#1075#1088#1072#1084#1084#1072' '#1086#1073#1091#1095#1072#1077#1090' '#1080#1089#1087#1086#1083#1100#1079#1086#1074#1072#1085#1080#1102' '#1083#1080#1085#1077#1081#1085#1099#1093' '#1089#1087#1080#1089#1082#1086#1074#1099#1093' '#1089#1090#1088#1091#1082#1090#1091#1088' '#1076#1072#1085#1085 +
@@ -76,7 +76,7 @@ object Form1: TForm1
       object Label2: TLabel
         Left = 8
         Top = 40
-        Width = 545
+        Width = 498
         Height = 34
         Caption = 
           '1) '#1053#1077#1091#1087#1086#1088#1103#1076#1086#1095#1077#1085#1085#1099#1081' '#1089#1087#1080#1089#1086#1082' '#1089' '#1074#1086#1079#1084#1086#1078#1085#1086#1089#1090#1100#1102' '#1076#1086#1073#1072#1074#1083#1077#1085#1080#1103' '#1074' '#1083#1102#1073#1086#1077' '#1079#1072#1076#1072 +
@@ -92,7 +92,7 @@ object Form1: TForm1
       object Label3: TLabel
         Left = 8
         Top = 73
-        Width = 497
+        Width = 467
         Height = 17
         Caption = 
           '2) '#1059#1087#1086#1088#1103#1076#1086#1095#1077#1085#1085#1099#1081' '#1089#1087#1080#1089#1086#1082' '#1085#1072' '#1086#1089#1085#1086#1074#1077' '#1086#1095#1077#1088#1077#1076#1080' '#1089' '#1080#1089#1087#1086#1083#1100#1079#1086#1074#1072#1085#1080#1077#1084' '#1087#1088#1080#1086#1088 +
@@ -170,7 +170,7 @@ object Form1: TForm1
       TabOrder = 3
       object ButtonAddAfter: TButton
         Left = 17
-        Top = 117
+        Top = 82
         Width = 112
         Height = 25
         Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1087#1086#1089#1083#1077
@@ -180,27 +180,27 @@ object Form1: TForm1
       end
       object ButtonAddFirst: TButton
         Left = 17
-        Top = 12
+        Top = 20
         Width = 112
         Height = 25
-        Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+        Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1087#1077#1088#1074#1099#1081
         Enabled = False
         TabOrder = 1
         OnClick = ButtonAddFirstClick
       end
       object ButtonAddBefore: TButton
         Left = 17
-        Top = 66
+        Top = 51
         Width = 112
         Height = 25
-        Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1076#1086
+        Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1087#1077#1088#1077#1076
         Enabled = False
         TabOrder = 2
         OnClick = ButtonAddBeforeClick
       end
       object ButtonDelete: TButton
-        Left = 159
-        Top = 12
+        Left = 17
+        Top = 113
         Width = 112
         Height = 25
         Caption = #1059#1076#1072#1083#1080#1090#1100
@@ -210,7 +210,7 @@ object Form1: TForm1
       end
       object ButtonNext: TBitBtn
         Left = 159
-        Top = 117
+        Top = 113
         Width = 112
         Height = 25
         Caption = '>>'
@@ -225,6 +225,15 @@ object Form1: TForm1
         ParentFont = False
         TabOrder = 4
         OnClick = ButtonNextClick
+      end
+      object ButtonClean: TButton
+        Left = 159
+        Top = 20
+        Width = 112
+        Height = 25
+        Caption = #1054#1095#1080#1089#1090#1080#1090#1100
+        TabOrder = 5
+        OnClick = ButtonCleanClick
       end
     end
     object ComboBoxMode: TComboBox

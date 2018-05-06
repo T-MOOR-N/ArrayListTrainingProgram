@@ -28,6 +28,7 @@ type
     MyStringGrid: TStringGrid;
     StringGrid2: TStringGrid;
     ListBox: TListBox;
+    ButtonClean: TButton;
     procedure FormCreate(Sender: TObject);
     procedure ComboBoxStructureChange(Sender: TObject);
     procedure ComboBoxModeChange(Sender: TObject);
@@ -41,6 +42,7 @@ type
     procedure MyStringGridDrawCell(Sender: TObject; ACol, ARow: Integer;
       Rect: TRect; State: TGridDrawState);
     procedure Updater();
+    procedure ButtonCleanClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -64,7 +66,7 @@ begin
     if ListBox.Items[ListBox.ItemIndex] = '' then
       ListBox.ItemIndex := -1;
 
-  if MyStringGrid.RowCount < RowTemp then
+  if MyStringGrid.RowCount < RowTemp + 1 then
     MyStringGrid.RowCount := RowTemp + 1;
 
   if not(List.State = lsNormal) then
@@ -100,7 +102,6 @@ begin
   // Exit;
   for i := 1 to List.GetMaxCount do
     MyStringGrid.Cells[i - 1, RowTemp] := List.GetItem(i);
-
   Updater();
 end;
 
@@ -112,25 +113,19 @@ begin
   // центруем текст в ячейках
   with MyStringGrid do
   begin
+    Canvas.Brush.Color := clWindow;
+
+    if List.temp <> -1 then
+      if (ARow = RowTemp) and (ACol = List.temp - 1) then
+        Canvas.Brush.Color := clSkyBlue;
+    if List.Add <> -1 then
+      if (ARow = RowTemp) and (ACol = List.Add - 1) then
+        Canvas.Brush.Color := clSilver;
+
     txt := Cells[ACol, ARow];
     Canvas.FillRect(Rect);
     Canvas.TextRect(Rect, txt, [tfVerticalCenter, tfCenter, tfSingleLine]);
   end;
-
-  // вывод текста
-  // begin
-  // if (ACol > 6) and (ARow = RowTemp) then
-  // begin // первый столбец и строку оставляем без изменений
-  // if (ACol = 1) or (ACol = 3) then
-  // MyStringGrid.Canvas.Brush.Color := clBlue;
-  //
-  // // ToDo: закрашивание ячеек в зависимости от текущего состояниея списка
-  //
-  // MyStringGrid.Canvas.FillRect(Rect);
-  // MyStringGrid.Canvas.Font.Color := clBlack;
-  // MyStringGrid.Canvas.TextOut(Rect.Left, Rect.Top,
-  // MyStringGrid.Cells[ACol, ARow]);
-  // end;
 end;
 
 procedure TForm1.ButtonNextClick(Sender: TObject);
@@ -191,6 +186,18 @@ begin
     on Exception: EConvertError do
       ShowMessage(Exception.Message);
   end;
+end;
+
+procedure TForm1.ButtonCleanClick(Sender: TObject);
+var
+  i: Integer;
+  j: Integer;
+begin
+  for i := 0 to MyStringGrid.ColCount do
+    for j := 0 to MyStringGrid.RowCount do
+      MyStringGrid.Cells[i, j] := '';
+  RowTemp := 0;
+  OnThreadSyspended(Sender);
 end;
 
 procedure TForm1.ButtonDeleteClick(Sender: TObject);

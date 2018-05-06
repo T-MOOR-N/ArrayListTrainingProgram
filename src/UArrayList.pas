@@ -38,6 +38,7 @@ type
     property step: integer read GetStep write SetStep;
   Public
     ThreadId: integer;
+    temp, Add: integer;
 
     Constructor Create();
     Procedure AddFirst(iNewValue: integer);
@@ -83,6 +84,8 @@ var
 begin
   Count := 0;
   step := 1;
+  temp := -1;
+  Add := -1;
   for i := 1 to Max do
     Items[i] := -1;
   CritSec := TCriticalSection.Create;
@@ -181,7 +184,7 @@ end;
 
 Procedure TArrayList.AddAfterTask();
 var
-  i, j: integer;
+  i: integer;
 begin
   CritSec.Enter;
 
@@ -202,11 +205,11 @@ begin
     ') ѕроверка возможности вставки: ќ ;');
   Pause();
 
-  j := _Search(SearchItem);
-  if j = 0 then
+  temp := _Search(SearchItem);
+  if temp = 0 then
     Finish();
 
-  if j = Count then
+  if temp = Count then
   begin
     FormMain.ListBox.Items.Add(step.ToString +
       ') —двиг текущей €чейки вправо: не нужен;');
@@ -221,7 +224,7 @@ begin
     Pause();
 
     IsMove := true;
-    for i := Count downto j + 1 do
+    for i := Count downto temp + 1 do
     begin
       Items[i + 1] := Items[i];
       Items[i] := -1;
@@ -233,9 +236,10 @@ begin
     end;
     IsMove := false;
   end;
-  Items[j + 1] := NewItem;
+  Add := temp + 1;
+  Items[temp + 1] := NewItem;
   FormMain.ListBox.Items.Add(step.ToString + ') ¬ставка: заносим значение ' +
-    NewItem.ToString + ' в €чейку [' + (j + 1).ToString + '];');
+    NewItem.ToString + ' в €чейку [' + (temp + 1).ToString + '];');
   Pause();
 
   FormMain.ListBox.Items.Add(step.ToString + ') ”величение COUNT на 1:' +
@@ -247,7 +251,7 @@ end;
 
 procedure TArrayList.AddBeforeTask();
 var
-  i, j: integer;
+  i: integer;
 begin
   CritSec.Enter;
 
@@ -268,43 +272,33 @@ begin
     ') ѕроверка возможности вставки: ќ ;');
   Pause();
 
-  j := _Search(SearchItem);
-  if j = 0 then
+  temp := _Search(SearchItem);
+  if temp = 0 then
     Finish();
 
-  if j = Count then
+  FormMain.ListBox.Items.Add(step.ToString +
+    ') —двиг €чеек вправо: перемещаем вправо содержимое €чеек начина€ с €чейки ['
+    + (Count).ToString + '];');
+  Pause();
+
+  IsMove := true;
+  for i := Count + 1 downto temp + 1 do
   begin
-    FormMain.ListBox.Items.Add(step.ToString +
-      ') —двиг текущей €чейки вправо: не нужен;');
-    Pause();
-  end
-  else
-  begin
+    Items[i] := Items[i - 1];
+    Items[i - 1] := -1;
 
     FormMain.ListBox.Items.Add(step.ToString +
-      ') —двиг €чеек вправо: перемещаем вправо содержимое €чеек начина€ с €чейки ['
-      + (Count).ToString + '];');
+      ') —двиг текущей вправо: перемещаем содержимое €чейки [' + (i - 1)
+      .ToString + '] в €чейку [' + i.ToString + '];');
     Pause();
-
-    IsMove := true;
-    for i := Count + 1 downto j + 1 do
-    begin
-      Items[i] := Items[i - 1];
-      Items[i - 1] := -1;
-
-      FormMain.ListBox.Items.Add(step.ToString +
-        ') —двиг текущей вправо: перемещаем содержимое €чейки [' + i.ToString +
-        '] в €чейку [' + (i + 1).ToString + '];');
-      Pause();
-    end;
-    IsMove := false;
-
   end;
+  IsMove := false;
 
-  Items[j] := NewItem;
+  Add := temp;
+  Items[temp] := NewItem;
 
   FormMain.ListBox.Items.Add(step.ToString + ') ¬ставка: заносим значение ' +
-    NewItem.ToString + ' в €чейку [' + j.ToString + '];');
+    NewItem.ToString + ' в €чейку [' + temp.ToString + '];');
   Pause();
 
   FormMain.ListBox.Items.Add(step.ToString + ') ”величение COUNT на 1:' +
@@ -353,7 +347,7 @@ begin
   for i := j to Count - 1 do
   begin
     Items[i] := Items[i + 1];
-    Items[i + 1]:=-1;
+    Items[i + 1] := -1;
 
     FormMain.ListBox.Items.Add(step.ToString +
       ') —двиг текущей влево: перемещаем содержимое €чейки [' + (i + 1).ToString
@@ -381,6 +375,7 @@ begin
 
   for i := 1 to Count do
   begin
+    temp := i;
     if (aName = Items[i]) then
     begin
       result := i;
@@ -412,6 +407,8 @@ begin
   Pause();
   FormMain.ListBox.Items.Add('');
   State := lsNormal;
+  temp := -1;
+  Add := -1;
   step := 1;
   GenericMyEvent;
   CritSec.Leave;
