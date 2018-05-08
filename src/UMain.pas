@@ -60,6 +60,8 @@ implementation
 {$R *.dfm}
 
 procedure TForm1.Updater();
+var
+  I, J: Integer;
 begin
   ListBox.ItemIndex := ListBox.Items.Count - 1;
   if ListBox.ItemIndex > 0 then
@@ -91,6 +93,14 @@ begin
   end;
   if ButtonNext.CanFocus then
     ButtonNext.SetFocus;
+
+  // костыль дл€ восстановлени€ цвета €чеек
+  if List.State = lsNormal then
+  begin
+    for I := 0 to MyStringGrid.ColCount do
+      for J := 0 to MyStringGrid.RowCount do
+        MyStringGrid.Cells[I,J]:=MyStringGrid.Cells[I,J];
+  end;
 end;
 
 // ќбработчик событи€ ThreadSyspended  - когда отсановили поток
