@@ -289,7 +289,7 @@ var
 begin
 
   ListArray := TArrayList.Create;
-  ListArray.Mode:= omDemo;
+  ListArray.Mode:= omControl;
   // подписываемся на событие ThreadSyspended
   ListArray.OnThreadSyspended := OnThreadSyspended;
 

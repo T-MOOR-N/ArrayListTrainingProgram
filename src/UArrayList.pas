@@ -232,16 +232,19 @@ begin
 
   AddMessage(step.ToString + ') ѕроверка возможности вставки: ќ ;');
 
-  AnswerKey := 2;
+  AnswerKey := 1;
   Pause();
 
   temp := _Search(SearchItem);
   if temp = 0 then
     Finish();
 
+  AnswerKey := 3;
+  Pause();
+
   if temp = Count then
   begin
-    AddMessage(step.ToString + ') —двиг текущей €чейки вправо: не нужен;');
+    AddMessage(step.ToString + ') —двиг €чеек вправо: не нужен;');
     Pause();
   end
   else
@@ -250,30 +253,31 @@ begin
     AddMessage(step.ToString +
       ') —двиг €чеек вправо: перемещаем вправо содержимое €чеек начина€ с €чейки ['
       + (Count).ToString + '];');
-    Pause();
 
     IsMove := true;
     for i := Count downto temp + 1 do
     begin
-      Items[i + 1] := Items[i];
-      Items[i] := -1;
-
+      AnswerKey := 6;
+      Pause();
       AddMessage(step.ToString +
         ') —двиг текущей вправо: перемещаем содержимое €чейки [' + i.ToString +
         '] в €чейку [' + (i + 1).ToString + '];');
-      Pause();
+
+      Items[i + 1] := Items[i];
+      Items[i] := -1;
     end;
     IsMove := false;
   end;
+  AnswerKey := 4;
+  Pause();
+  AddMessage(step.ToString + ') ¬ставка: заносим значение ' + NewItem.ToString +
+    ' в €чейку [' + (temp + 1).ToString + '];');
+
   Add := temp + 1;
   Items[temp + 1] := NewItem;
 
-  AnswerKey := 3;
-  AddMessage(step.ToString + ') ¬ставка: заносим значение ' + NewItem.ToString +
-    ' в €чейку [' + (temp + 1).ToString + '];');
+  AnswerKey := 5;
   Pause();
-
-  AnswerKey := 4;
   AddMessage(step.ToString + ') ”величение COUNT на 1:' + ' COUNT = ' +
     Count.ToString + ' + 1 = ' + IntToStr(Count + 1) + ';');
   Inc(Count);
@@ -330,12 +334,6 @@ begin
     Items[i] := Items[i - 1];
     Items[i - 1] := -1;
 
-
-    // Pause();
-    // AddMessage(step.ToString +
-    // ') —двиг текущей вправо: перемещаем содержимое €чейки [' + (i - 1)
-    // .ToString + '] в €чейку [' + i.ToString + '];');
-
   end;
   IsMove := false;
 
@@ -346,11 +344,6 @@ begin
 
   Add := temp;
   Items[temp] := NewItem;
-
-  // AnswerKey := 4;
-  // Pause();
-  // AddMessage(step.ToString + ') ¬ставка: заносим значение ' + NewItem.ToString +
-  // ' в €чейку [' + temp.ToString + '];');
 
   AnswerKey := 5;
   Pause();
