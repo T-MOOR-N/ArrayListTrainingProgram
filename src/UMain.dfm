@@ -114,7 +114,6 @@ object FormMain: TFormMain
       Color = clWhite
       ColCount = 6
       DefaultColWidth = 44
-      Enabled = False
       FixedColor = clWhite
       FixedCols = 0
       RowCount = 6
@@ -125,7 +124,9 @@ object FormMain: TFormMain
       Font.Name = 'Tahoma'
       Font.Style = []
       GridLineWidth = 3
+      Options = [goVertLine, goHorzLine]
       ParentFont = False
+      ScrollBars = ssVertical
       TabOrder = 0
       OnDrawCell = MyStringGridDrawCell
       ColWidths = (
@@ -148,14 +149,16 @@ object FormMain: TFormMain
       Top = 25
       Width = 289
       Height = 27
+      Style = csDropDownList
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ItemIndex = 0
       ParentFont = False
       TabOrder = 1
-      Text = #1042#1099#1073#1077#1088#1080#1090#1077' '#1089#1090#1088#1091#1082#1090#1091#1088#1091
+      Text = #1053#1077#1091#1087#1086#1088#1103#1076#1086#1095#1077#1085#1085#1099#1081' '#1089#1087#1080#1089#1086#1082
       OnChange = ComboBoxStructureChange
       Items.Strings = (
         #1053#1077#1091#1087#1086#1088#1103#1076#1086#1095#1077#1085#1085#1099#1081' '#1089#1087#1080#1089#1086#1082
@@ -183,7 +186,6 @@ object FormMain: TFormMain
         Width = 112
         Height = 25
         Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1087#1077#1088#1074#1099#1081
-        Enabled = False
         TabOrder = 1
         OnClick = ButtonAddFirstClick
       end
@@ -231,6 +233,7 @@ object FormMain: TFormMain
         Width = 112
         Height = 25
         Caption = #1054#1095#1080#1089#1090#1080#1090#1100
+        Enabled = False
         TabOrder = 5
         OnClick = ButtonCleanClick
       end
@@ -240,14 +243,16 @@ object FormMain: TFormMain
       Top = 69
       Width = 289
       Height = 27
+      Style = csDropDownList
       Font.Charset = RUSSIAN_CHARSET
       Font.Color = clWindowText
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ItemIndex = 0
       ParentFont = False
       TabOrder = 4
-      Text = #1042#1099#1073#1077#1088#1080#1090#1077' '#1088#1077#1078#1080#1084
+      Text = #1044#1077#1084#1086#1085#1089#1090#1088#1072#1094#1080#1103
       OnChange = ComboBoxModeChange
       Items.Strings = (
         #1044#1077#1084#1086#1085#1089#1090#1088#1072#1094#1080#1103

@@ -69,7 +69,7 @@ type
 
 var
   AddAnswers: array [0 .. 6] of string;
-  DeleteAnswers: array [0 .. 4] of string;
+  DeleteAnswers: array [0 .. 6] of string;
   allowmessage: boolean;
 
 implementation
@@ -107,9 +107,11 @@ begin
 
   DeleteAnswers[0] := 'ѕроверка возможности удалени€';
   DeleteAnswers[1] := 'ѕоиск введенного пользователем значени€';
-  DeleteAnswers[2] := '»звлечь элемент списка';
-  DeleteAnswers[3] := '—двиг €чеек влево';
-  DeleteAnswers[4] := '”меньшение COUNT на 1';
+  DeleteAnswers[2] := 'ѕродолжаем поиск, провер€ем очередную €чейку';
+  DeleteAnswers[3] := '»звлечь элемент списка';
+  DeleteAnswers[4] := '—двиг €чеек влево';
+  DeleteAnswers[5] := '—двиг текущей €чейки влево';
+  DeleteAnswers[6] := '”меньшение COUNT на 1';
 end;
 
 Function TArrayList.GetCount;
@@ -245,7 +247,6 @@ begin
   if temp = Count then
   begin
     AddMessage(step.ToString + ') —двиг €чеек вправо: не нужен;');
-    Pause();
   end
   else
   begin
@@ -362,9 +363,10 @@ begin
 
   AddMessage('”даление элемента ' + SearchItem.ToString + ' (COUNT = ' +
     Count.ToString + ')');
-  Pause();
 
   AnswerKey := 0;
+  Pause();
+
   if Count = 0 then
   begin
     AddMessage(step.ToString +
@@ -373,43 +375,45 @@ begin
   end;
 
   AddMessage(step.ToString + ') ѕроверка возможности удалени€: ќ ;');
-  Pause();
 
   AnswerKey := 1;
+  Pause();
+
   j := _Search(SearchItem);
   if j = 0 then
     Finish();
 
-  AnswerKey := 2;
-  AddMessage('»звлечь элемент списка: [' + j.ToString + '] => ' +
+  AnswerKey := 4;
+  Pause();
+  AddMessage(step.ToString + ') »звлечь элемент списка: [' + j.ToString + '] => ' +
     SearchItem.ToString + ';');
   Items[j] := -1;
-  Pause();
 
-  AnswerKey := 3;
+  Pause();
+  AnswerKey := 4;
   AddMessage(step.ToString +
     ') —двиг €чеек влево: перемещаем влево содержимое €чеек начина€ с €чейки ['
     + j.ToString + '];');
-  Pause();
 
   IsMove := true;
   for i := j to Count - 1 do
   begin
-    Items[i] := Items[i + 1];
-    Items[i + 1] := -1;
-
+    AnswerKey := 5;
+    Pause();
     AddMessage(step.ToString +
       ') —двиг текущей влево: перемещаем содержимое €чейки [' + (i + 1).ToString
       + '] в €чейку [' + i.ToString + '];');
-    Pause();
+
+    Items[i] := Items[i + 1];
+    Items[i + 1] := -1;
   end;
   IsMove := false;
 
-  AnswerKey := 4;
+  AnswerKey := 6;
+  Pause();
   AddMessage(step.ToString + ') ”меньшение COUNT на 1:' + ' COUNT = ' +
     Count.ToString + ' - 1 = ' + (Count - 1).ToString + ';');
   Dec(Count);
-  Pause();
   Finish();
 end;
 

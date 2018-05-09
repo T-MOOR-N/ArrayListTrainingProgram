@@ -77,7 +77,22 @@ begin
       end;
     lsDelete:
       begin
+        for i := 0 to 3 do
+          // генерируем случайные ключ ответа, пока не найдем уникальный
+          while UniqueAnswer.Count <> 4 do
+          begin
+            index := Random(7);
+            if index <> ListArray.AnswerKey then
+              if not UniqueAnswer.Contains(index) then
+                UniqueAnswer.Add(index)
+          end;
 
+        for i := 0 to 3 do
+        begin
+          ListBox.Items.Add(DeleteAnswers[UniqueAnswer.Items[i]]);
+        end;
+        rIndex := Random(4);
+        ListBox.Items[rIndex] := DeleteAnswers[ListArray.AnswerKey];
       end;
   end;
 end;

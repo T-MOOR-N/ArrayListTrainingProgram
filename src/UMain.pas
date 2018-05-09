@@ -44,6 +44,7 @@ type
       Rect: TRect; State: TGridDrawState);
     procedure Updater();
     procedure ButtonCleanClick(Sender: TObject);
+    procedure ComboBoxModeSelect(Sender: TObject);
 
   private
     { Private declarations }
@@ -55,6 +56,7 @@ var
   FormMain: TFormMain;
   ListArray: TArrayList;
   RowTemp: Integer;
+  Mode: TOperatingMode = TOperatingMode.omDemo;
 
 implementation
 
@@ -281,15 +283,35 @@ begin
   ButtonAddBefore.Enabled := true;
   ButtonAddAfter.Enabled := true;
   ButtonNext.Enabled := true;
+
+  if ComboBoxMode.ItemIndex = 0 then
+    Mode := omDemo;
+  if ComboBoxMode.ItemIndex = 1 then
+    Mode := omControl;
+  FormCreate(self);
+end;
+
+procedure TFormMain.ComboBoxModeSelect(Sender: TObject);
+begin
+  if ComboBoxMode.ItemIndex = 0 then
+    Mode := omDemo;
+  if ComboBoxMode.ItemIndex = 1 then
+    Mode := omControl;
+  FormCreate(self);
 end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
 var
   myRect: TGridRect;
+  I: Integer;
+  J: Integer;
 begin
+  for I := 0 to MyStringGrid.ColCount do
+    for J := 0 to MyStringGrid.RowCount do
+      MyStringGrid.Cells[I, J] := '';
 
   ListArray := TArrayList.Create;
-  ListArray.Mode:= omControl;
+  ListArray.Mode := Mode;
   // подписываемся на событие ThreadSyspended
   ListArray.OnThreadSyspended := OnThreadSyspended;
 
@@ -297,7 +319,7 @@ begin
 
   ButtonDelete.Enabled := false;
 
-  ComboBoxMode.Enabled := false;
+  // ComboBoxMode.Enabled := false;
 
   StringGrid2.Cells[0, 0] := '1';
   StringGrid2.Cells[1, 0] := '2';
