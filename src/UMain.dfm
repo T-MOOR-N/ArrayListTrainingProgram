@@ -1,4 +1,4 @@
-object Form1: TForm1
+object FormMain: TFormMain
   Left = 0
   Top = 0
   BorderStyle = bsSingle
@@ -24,7 +24,6 @@ object Form1: TForm1
     Color = clMenu
     ParentBackground = False
     TabOrder = 0
-    ExplicitHeight = 680
     object Label4: TLabel
       Left = 8
       Top = 113

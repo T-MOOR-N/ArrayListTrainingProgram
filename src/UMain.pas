@@ -6,10 +6,11 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Grids, Vcl.ExtCtrls,
-  Vcl.Menus, Vcl.Buttons, Vcl.Imaging.pngimage, Vcl.XPMan, UArrayList, WinProcs;
+  Vcl.Menus, Vcl.Buttons, Vcl.Imaging.pngimage, Vcl.XPMan, UArrayList, WinProcs,
+  UTest;
 
 type
-  TForm1 = class(TForm)
+  TFormMain = class(TForm)
     Panel1: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
@@ -51,15 +52,15 @@ type
   end;
 
 var
-  FormMain: TForm1;
-  List: TArrayList;
+  FormMain: TFormMain;
+  ListArray: TArrayList;
   RowTemp: Integer;
 
 implementation
 
 {$R *.dfm}
 
-procedure TForm1.Updater();
+procedure TFormMain.Updater();
 var
   I, J: Integer;
 begin
@@ -71,7 +72,7 @@ begin
   if MyStringGrid.RowCount < RowTemp + 1 then
     MyStringGrid.RowCount := RowTemp + 1;
 
-  if not(List.State = lsNormal) then
+  if not(ListArray.State = lsNormal) then
   begin
     ButtonAddAfter.Enabled := false;
     ButtonAddFirst.Enabled := false;
@@ -81,9 +82,9 @@ begin
   end
   else
   begin
-    if List.GetCount = 0 then
+    if ListArray.GetCount = 0 then
       ButtonAddFirst.Enabled := true;
-    if List.GetCount > 0 then
+    if ListArray.GetCount > 0 then
     begin
       ButtonAddAfter.Enabled := true;
       ButtonAddBefore.Enabled := true;
@@ -95,27 +96,27 @@ begin
     ButtonNext.SetFocus;
 
   // костыль дл€ восстановлени€ цвета €чеек
-  if List.State = lsNormal then
+  if ListArray.State = lsNormal then
   begin
     for I := 0 to MyStringGrid.ColCount do
       for J := 0 to MyStringGrid.RowCount do
-        MyStringGrid.Cells[I,J]:=MyStringGrid.Cells[I,J];
+        MyStringGrid.Cells[I, J] := MyStringGrid.Cells[I, J];
   end;
 end;
 
 // ќбработчик событи€ ThreadSyspended  - когда отсановили поток
-procedure TForm1.OnThreadSyspended(Sender: TObject);
+procedure TFormMain.OnThreadSyspended(Sender: TObject);
 var
-  i: Integer;
+  I: Integer;
 begin
   // if not(Sender is TArrayList) then
   // Exit;
-  for i := 1 to List.GetMaxCount do
-    MyStringGrid.Cells[i - 1, RowTemp] := List.GetItem(i);
+  for I := 1 to ListArray.GetMaxCount do
+    MyStringGrid.Cells[I - 1, RowTemp] := ListArray.GetItem(I);
   Updater();
 end;
 
-procedure TForm1.MyStringGridDrawCell(Sender: TObject; ACol, ARow: Integer;
+procedure TFormMain.MyStringGridDrawCell(Sender: TObject; ACol, ARow: Integer;
   Rect: TRect; State: TGridDrawState);
 var
   txt: string;
@@ -125,11 +126,11 @@ begin
   begin
     Canvas.Brush.Color := clWindow;
 
-    if List.temp <> -1 then
-      if (ARow = RowTemp) and (ACol = List.temp - 1) then
+    if ListArray.temp <> -1 then
+      if (ARow = RowTemp) and (ACol = ListArray.temp - 1) then
         Canvas.Brush.Color := clSkyBlue;
-    if List.Add <> -1 then
-      if (ARow = RowTemp) and (ACol = List.Add - 1) then
+    if ListArray.Add <> -1 then
+      if (ARow = RowTemp) and (ACol = ListArray.Add - 1) then
         Canvas.Brush.Color := clSilver;
 
     txt := Cells[ACol, ARow];
@@ -138,19 +139,27 @@ begin
   end;
 end;
 
-procedure TForm1.ButtonNextClick(Sender: TObject);
+procedure TFormMain.ButtonNextClick(Sender: TObject);
 // var
 // i: integer;
 // begin
 // for i := 1 to List.GetCount do
 // StringGrid1.Cells[i - 1, RowTemp] := List.GetItem(i);
 begin
-  List.NextStep;
-  if List.IsMove then
+  case ListArray.Mode of
+    omControl:
+      begin
+        // заполнение формы с вопросами
+        FormTest.Load;
+        FormTest.ShowModal;
+      end;
+  end;
+  ListArray.NextStep;
+  if ListArray.IsMove then
     Inc(RowTemp);
 end;
 
-procedure TForm1.ButtonAddAfterClick(Sender: TObject);
+procedure TFormMain.ButtonAddAfterClick(Sender: TObject);
 var
   sNewValue, sAfterValue: string;
   iNewValue, iAfterValue: Integer;
@@ -169,7 +178,7 @@ begin
     Trim(sAfterValue);
     iAfterValue := StrToInt(sAfterValue);
 
-    List.AddAfter(iNewValue, iAfterValue);
+    ListArray.AddAfter(iNewValue, iAfterValue);
 
     Inc(RowTemp);
   except
@@ -178,7 +187,7 @@ begin
   end;
 end;
 
-procedure TForm1.ButtonAddFirstClick(Sender: TObject);
+procedure TFormMain.ButtonAddFirstClick(Sender: TObject);
 var
   sValue: string;
   iValue: Integer;
@@ -190,7 +199,7 @@ begin
     Trim(sValue);
     iValue := StrToInt(sValue);
 
-    List.AddFirst(iValue);
+    ListArray.AddFirst(iValue);
     Inc(RowTemp);
   except
     on Exception: EConvertError do
@@ -198,19 +207,19 @@ begin
   end;
 end;
 
-procedure TForm1.ButtonCleanClick(Sender: TObject);
+procedure TFormMain.ButtonCleanClick(Sender: TObject);
 var
-  i: Integer;
-  j: Integer;
+  I: Integer;
+  J: Integer;
 begin
-  for i := 0 to MyStringGrid.ColCount do
-    for j := 0 to MyStringGrid.RowCount do
-      MyStringGrid.Cells[i, j] := '';
+  for I := 0 to MyStringGrid.ColCount do
+    for J := 0 to MyStringGrid.RowCount do
+      MyStringGrid.Cells[I, J] := '';
   RowTemp := 0;
   OnThreadSyspended(Sender);
 end;
 
-procedure TForm1.ButtonDeleteClick(Sender: TObject);
+procedure TFormMain.ButtonDeleteClick(Sender: TObject);
 var
   sValue: string;
   iValue: Integer;
@@ -221,7 +230,7 @@ begin
     Trim(sValue);
     iValue := StrToInt(sValue);
 
-    List.Delete(iValue);
+    ListArray.Delete(iValue);
     Inc(RowTemp);
   except
     on Exception: EConvertError do
@@ -229,7 +238,7 @@ begin
   end;
 end;
 
-procedure TForm1.ButtonAddBeforeClick(Sender: TObject);
+procedure TFormMain.ButtonAddBeforeClick(Sender: TObject);
 var
   sNewValue, sBeforeValue: string;
   iNewValue, iBeforeValue: Integer;
@@ -248,7 +257,7 @@ begin
     Trim(sBeforeValue);
     iBeforeValue := StrToInt(sBeforeValue);
 
-    List.AddBefore(iNewValue, iBeforeValue);
+    ListArray.AddBefore(iNewValue, iBeforeValue);
 
     Inc(RowTemp);
   except
@@ -257,14 +266,14 @@ begin
   end;
 end;
 
-procedure TForm1.ComboBoxStructureChange(Sender: TObject);
+procedure TFormMain.ComboBoxStructureChange(Sender: TObject);
 begin
   if ComboBoxStructure.ItemIndex = 0 then
     ComboBoxMode.Enabled := true;
 
 end;
 
-procedure TForm1.ComboBoxModeChange(Sender: TObject);
+procedure TFormMain.ComboBoxModeChange(Sender: TObject);
 begin
   if ComboBoxMode.ItemIndex = 0 then
     ButtonDelete.Enabled := true;
@@ -274,14 +283,15 @@ begin
   ButtonNext.Enabled := true;
 end;
 
-procedure TForm1.FormCreate(Sender: TObject);
+procedure TFormMain.FormCreate(Sender: TObject);
 var
   myRect: TGridRect;
 begin
 
-  List := TArrayList.Create;
+  ListArray := TArrayList.Create;
+  ListArray.Mode:= omDemo;
   // подписываемс€ на событие ThreadSyspended
-  List.OnThreadSyspended := OnThreadSyspended;
+  ListArray.OnThreadSyspended := OnThreadSyspended;
 
   RowTemp := -1;
 

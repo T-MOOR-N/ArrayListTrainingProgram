@@ -2,13 +2,15 @@ program TrainingSimulator;
 
 uses
   Vcl.Forms,
-  UMain in 'UMain.pas' {Form1} ,
-  UArrayList in 'UArrayList.pas';
+  UMain in 'UMain.pas' {FormMain},
+  UArrayList in 'UArrayList.pas',
+  UTest in 'UTest.pas' {FormTest};
 
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.CreateForm(TForm1, FormMain);
+  Application.CreateForm(TFormMain, FormMain);
+  Application.CreateForm(TFormTest, FormTest);
   Application.Run;
 
 end.

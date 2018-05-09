@@ -39,6 +39,7 @@ type
   Public
     ThreadId: integer;
     temp, Add: integer;
+    AnswerKey: integer;
 
     Constructor Create();
     Procedure AddFirst(iNewValue: integer);
@@ -66,6 +67,11 @@ type
     property IsMove: boolean read FIsMove write FIsMove;
   End;
 
+var
+  AddAnswers: array [0 .. 6] of string;
+  DeleteAnswers: array [0 .. 4] of string;
+  allowmessage: boolean;
+
 implementation
 
 uses
@@ -86,9 +92,24 @@ begin
   step := 1;
   temp := -1;
   Add := -1;
+  allowmessage := true;
   for i := 1 to Max do
     Items[i] := -1;
   CritSec := TCriticalSection.Create;
+
+  AddAnswers[0] := 'Проверка возможности вставки';
+  AddAnswers[1] := 'Поиск введенного пользователем значения';
+  AddAnswers[2] := 'Продолжаем поиск, проверяем очередную ячейку';
+  AddAnswers[3] := 'Сдвиг ячеек вправо';
+  AddAnswers[4] := 'Вставка';
+  AddAnswers[5] := 'Увеличение COUNT на 1';
+  AddAnswers[6] := 'Сдвиг текущей ячейки вправо';
+
+  DeleteAnswers[0] := 'Проверка возможности удаления';
+  DeleteAnswers[1] := 'Поиск введенного пользователем значения';
+  DeleteAnswers[2] := 'Извлечь элемент списка';
+  DeleteAnswers[3] := 'Сдвиг ячеек влево';
+  DeleteAnswers[4] := 'Уменьшение COUNT на 1';
 end;
 
 Function TArrayList.GetCount;
@@ -115,6 +136,11 @@ begin
   result := Max;
 end;
 
+procedure AddMessage(const S: String);
+begin
+  if allowmessage then
+    FormMain.ListBox.Items.Add(S);
+end;
 {$REGION 'ThreadWrapper'}
 
 procedure TArrayList.AddFirst(iNewValue: integer);
@@ -165,18 +191,20 @@ begin
   CritSec.Enter;
   if Count = 0 then
   begin
-    FormMain.ListBox.Items.Add('Добавление в список первого элемента ' +
-      IntToStr(NewItem) + ' (COUNT = ' + Count.ToString + ')');
-    Pause();
+    AddMessage('Добавление в список первого элемента ' + IntToStr(NewItem) +
+      ' (COUNT = ' + Count.ToString + ')');
     step := 1;
 
-    FormMain.ListBox.Items.Add(step.ToString + ') Вставка: заносим значение ' +
-      NewItem.ToString + ' в ячейку [1];');
-    Items[1] := NewItem;
+    AnswerKey := 4;
     Pause();
+    AddMessage(step.ToString + ') Вставка: заносим значение ' + NewItem.ToString
+      + ' в ячейку [1];');
+    Items[1] := NewItem;
 
-    FormMain.ListBox.Items.Add(step.ToString + ') Увеличение COUNT на 1:' +
-      ' COUNT = ' + Count.ToString + ' + 1 = ' + IntToStr(Count + 1) + ';');
+    AnswerKey := 5;
+    Pause();
+    AddMessage(step.ToString + ') Увеличение COUNT на 1:' + ' COUNT = ' +
+      Count.ToString + ' + 1 = ' + IntToStr(Count + 1) + ';');
     Inc(Count);
   end;
   Finish();
@@ -188,21 +216,23 @@ var
 begin
   CritSec.Enter;
 
-  FormMain.ListBox.Items.Add('Вставка в список элемента  ' + NewItem.ToString +
-    ' после ' + SearchItem.ToString + ' (COUNT = ' + Count.ToString + ')');
-  Pause();
+  AddMessage('Вставка в список элемента  ' + NewItem.ToString + ' после ' +
+    SearchItem.ToString + ' (COUNT = ' + Count.ToString + ')');
 
+  AnswerKey := 0;
+  Pause();
   if Count = 0 then
     Finish();
   if Count = Max then
   begin
-    FormMain.ListBox.Items.Add(step.ToString +
+    AddMessage(step.ToString +
       ') Проверка возможности вставки: Список заполнен;');
     Finish();
   end;
 
-  FormMain.ListBox.Items.Add(step.ToString +
-    ') Проверка возможности вставки: ОК;');
+  AddMessage(step.ToString + ') Проверка возможности вставки: ОК;');
+
+  AnswerKey := 2;
   Pause();
 
   temp := _Search(SearchItem);
@@ -211,14 +241,13 @@ begin
 
   if temp = Count then
   begin
-    FormMain.ListBox.Items.Add(step.ToString +
-      ') Сдвиг текущей ячейки вправо: не нужен;');
+    AddMessage(step.ToString + ') Сдвиг текущей ячейки вправо: не нужен;');
     Pause();
   end
   else
   begin
 
-    FormMain.ListBox.Items.Add(step.ToString +
+    AddMessage(step.ToString +
       ') Сдвиг ячеек вправо: перемещаем вправо содержимое ячеек начиная с ячейки ['
       + (Count).ToString + '];');
     Pause();
@@ -229,7 +258,7 @@ begin
       Items[i + 1] := Items[i];
       Items[i] := -1;
 
-      FormMain.ListBox.Items.Add(step.ToString +
+      AddMessage(step.ToString +
         ') Сдвиг текущей вправо: перемещаем содержимое ячейки [' + i.ToString +
         '] в ячейку [' + (i + 1).ToString + '];');
       Pause();
@@ -238,12 +267,15 @@ begin
   end;
   Add := temp + 1;
   Items[temp + 1] := NewItem;
-  FormMain.ListBox.Items.Add(step.ToString + ') Вставка: заносим значение ' +
-    NewItem.ToString + ' в ячейку [' + (temp + 1).ToString + '];');
+
+  AnswerKey := 3;
+  AddMessage(step.ToString + ') Вставка: заносим значение ' + NewItem.ToString +
+    ' в ячейку [' + (temp + 1).ToString + '];');
   Pause();
 
-  FormMain.ListBox.Items.Add(step.ToString + ') Увеличение COUNT на 1:' +
-    ' COUNT = ' + Count.ToString + ' + 1 = ' + IntToStr(Count + 1) + ';');
+  AnswerKey := 4;
+  AddMessage(step.ToString + ') Увеличение COUNT на 1:' + ' COUNT = ' +
+    Count.ToString + ' + 1 = ' + IntToStr(Count + 1) + ';');
   Inc(Count);
 
   Finish();
@@ -255,54 +287,75 @@ var
 begin
   CritSec.Enter;
 
-  FormMain.ListBox.Items.Add('Вставка в список элемента  ' + NewItem.ToString +
-    ' до ' + SearchItem.ToString + ' (COUNT = ' + Count.ToString + ')');
+  AddMessage('Вставка в список элемента  ' + NewItem.ToString + ' до ' +
+    SearchItem.ToString + ' (COUNT = ' + Count.ToString + ')');
+
+  AnswerKey := 0;
   Pause();
 
   if Count = 0 then
     Finish();
+
   if Count = Max then
   begin
-    FormMain.ListBox.Items.Add(step.ToString +
+    AddMessage(step.ToString +
       ') Проверка возможности вставки: Список заполнен;');
     Finish();
   end;
 
-  FormMain.ListBox.Items.Add(step.ToString +
-    ') Проверка возможности вставки: ОК;');
+  AddMessage(step.ToString + ') Проверка возможности вставки: ОК;');
+
+  AnswerKey := 1;
   Pause();
 
   temp := _Search(SearchItem);
   if temp = 0 then
     Finish();
 
-  FormMain.ListBox.Items.Add(step.ToString +
+  AnswerKey := 3;
+  Pause();
+  AddMessage(step.ToString +
     ') Сдвиг ячеек вправо: перемещаем вправо содержимое ячеек начиная с ячейки ['
     + (Count).ToString + '];');
-  Pause();
 
   IsMove := true;
   for i := Count + 1 downto temp + 1 do
   begin
+    AnswerKey := 6;
+    Pause();
+    AddMessage(step.ToString +
+      ') Сдвиг текущей вправо: перемещаем содержимое ячейки [' + (i - 1)
+      .ToString + '] в ячейку [' + i.ToString + '];');
+
     Items[i] := Items[i - 1];
     Items[i - 1] := -1;
 
-    FormMain.ListBox.Items.Add(step.ToString +
-      ') Сдвиг текущей вправо: перемещаем содержимое ячейки [' + (i - 1)
-      .ToString + '] в ячейку [' + i.ToString + '];');
-    Pause();
+
+    // Pause();
+    // AddMessage(step.ToString +
+    // ') Сдвиг текущей вправо: перемещаем содержимое ячейки [' + (i - 1)
+    // .ToString + '] в ячейку [' + i.ToString + '];');
+
   end;
   IsMove := false;
+
+  AnswerKey := 4;
+  Pause();
+  AddMessage(step.ToString + ') Вставка: заносим значение ' + NewItem.ToString +
+    ' в ячейку [' + temp.ToString + '];');
 
   Add := temp;
   Items[temp] := NewItem;
 
-  FormMain.ListBox.Items.Add(step.ToString + ') Вставка: заносим значение ' +
-    NewItem.ToString + ' в ячейку [' + temp.ToString + '];');
-  Pause();
+  // AnswerKey := 4;
+  // Pause();
+  // AddMessage(step.ToString + ') Вставка: заносим значение ' + NewItem.ToString +
+  // ' в ячейку [' + temp.ToString + '];');
 
-  FormMain.ListBox.Items.Add(step.ToString + ') Увеличение COUNT на 1:' +
-    ' COUNT = ' + Count.ToString + ' + 1 = ' + IntToStr(Count + 1) + ';');
+  AnswerKey := 5;
+  Pause();
+  AddMessage(step.ToString + ') Увеличение COUNT на 1:' + ' COUNT = ' +
+    Count.ToString + ' + 1 = ' + IntToStr(Count + 1) + ';');
   Inc(Count);
 
   Finish();
@@ -314,31 +367,34 @@ var
 begin
   CritSec.Enter;
 
-  FormMain.ListBox.Items.Add('Удаление элемента ' + SearchItem.ToString +
-    ' (COUNT = ' + Count.ToString + ')');
+  AddMessage('Удаление элемента ' + SearchItem.ToString + ' (COUNT = ' +
+    Count.ToString + ')');
   Pause();
 
+  AnswerKey := 0;
   if Count = 0 then
   begin
-    FormMain.ListBox.Items.Add(step.ToString +
+    AddMessage(step.ToString +
       ') Проверка возможности удаления: не ОК - переделай текст;');
     Finish();
   end;
 
-  FormMain.ListBox.Items.Add(step.ToString +
-    ') Проверка возможности удаления: ОК;');
+  AddMessage(step.ToString + ') Проверка возможности удаления: ОК;');
   Pause();
 
+  AnswerKey := 1;
   j := _Search(SearchItem);
   if j = 0 then
     Finish();
 
-  FormMain.ListBox.Items.Add('Извлечь элемент списка: [' + j.ToString + '] => '
-    + SearchItem.ToString + ';');
+  AnswerKey := 2;
+  AddMessage('Извлечь элемент списка: [' + j.ToString + '] => ' +
+    SearchItem.ToString + ';');
   Items[j] := -1;
   Pause();
 
-  FormMain.ListBox.Items.Add(step.ToString +
+  AnswerKey := 3;
+  AddMessage(step.ToString +
     ') Сдвиг ячеек влево: перемещаем влево содержимое ячеек начиная с ячейки ['
     + j.ToString + '];');
   Pause();
@@ -349,15 +405,16 @@ begin
     Items[i] := Items[i + 1];
     Items[i + 1] := -1;
 
-    FormMain.ListBox.Items.Add(step.ToString +
+    AddMessage(step.ToString +
       ') Сдвиг текущей влево: перемещаем содержимое ячейки [' + (i + 1).ToString
       + '] в ячейку [' + i.ToString + '];');
     Pause();
   end;
   IsMove := false;
 
-  FormMain.ListBox.Items.Add(step.ToString + ') Уменьшение COUNT на 1:' +
-    ' COUNT = ' + Count.ToString + ' - 1 = ' + (Count - 1).ToString + ';');
+  AnswerKey := 4;
+  AddMessage(step.ToString + ') Уменьшение COUNT на 1:' + ' COUNT = ' +
+    Count.ToString + ' - 1 = ' + (Count - 1).ToString + ';');
   Dec(Count);
   Pause();
   Finish();
@@ -369,9 +426,10 @@ var
 begin
   result := 0;
 
-  FormMain.ListBox.Items.Add(step.ToString +
-    ') Поиск введенного пользователем значения: ' + SearchItem.ToString + ';');
-  Pause();
+  AddMessage(step.ToString + ') Поиск введенного пользователем значения: ' +
+    SearchItem.ToString + ';');
+
+  // Pause();
 
   for i := 1 to Count do
   begin
@@ -381,31 +439,38 @@ begin
       result := i;
       break;
     end;
-    FormMain.ListBox.Items.Add(step.ToString +
+
+    AnswerKey := 2;
+    Pause();
+    AddMessage(step.ToString +
       ') Продолжаем поиск, проверяем очередную ячейку: [' + i.ToString + '] <>'
       + SearchItem.ToString + ' , переходим к следующей ячейке;');
-    Pause();
+    // Pause();
   end;
 
   if result <> 0 then
   begin
-    FormMain.ListBox.Items.Add(step.ToString +
+    AnswerKey := 2;
+    Pause();
+    AddMessage(step.ToString +
       ') Продолжаем поиск, проверяем очередную ячейку: элемент найден, [' +
       i.ToString + '] == ' + SearchItem.ToString + ' , конец поиска;');
-    Pause();
   end
   else
   begin
-    FormMain.ListBox.Items.Add(step.ToString +
-      ') Продолжаем поиск, проверяем очередную ячейку: Конец списка! Элемент не найден;');
+    AnswerKey := 2;
     Pause();
+
+    AddMessage(step.ToString +
+      ') Продолжаем поиск, проверяем очередную ячейку: Конец списка! Элемент не найден;');
+    // Pause();
   end;
 end;
 
 procedure TArrayList.Finish();
 begin
-  Pause();
-  FormMain.ListBox.Items.Add('');
+  // Pause();
+  AddMessage('');
   State := lsNormal;
   temp := -1;
   Add := -1;
