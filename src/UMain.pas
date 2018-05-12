@@ -30,6 +30,7 @@ type
     StringGrid2: TStringGrid;
     ListBox: TListBox;
     ButtonClean: TButton;
+    Button1: TButton;
     procedure FormCreate(Sender: TObject);
     procedure ComboBoxStructureChange(Sender: TObject);
     procedure ComboBoxModeChange(Sender: TObject);
@@ -45,6 +46,7 @@ type
     procedure Updater();
     procedure ButtonCleanClick(Sender: TObject);
     procedure ComboBoxModeSelect(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
 
   private
     { Private declarations }
@@ -65,6 +67,7 @@ implementation
 procedure TFormMain.Updater();
 var
   I, J: Integer;
+
 begin
   ListBox.ItemIndex := ListBox.Items.Count - 1;
   if ListBox.ItemIndex > 0 then
@@ -128,11 +131,11 @@ begin
   begin
     Canvas.Brush.Color := clWindow;
 
-    if ListArray.temp <> -1 then
-      if (ARow = RowTemp) and (ACol = ListArray.temp - 1) then
+    if ListArray.TempIndex <> -1 then
+      if (ARow = RowTemp) and (ACol = ListArray.TempIndex - 1) then
         Canvas.Brush.Color := clSkyBlue;
-    if ListArray.Add <> -1 then
-      if (ARow = RowTemp) and (ACol = ListArray.Add - 1) then
+    if ListArray.AddIndex <> -1 then
+      if (ARow = RowTemp) and (ACol = ListArray.AddIndex - 1) then
         Canvas.Brush.Color := clSilver;
 
     txt := Cells[ACol, ARow];
@@ -159,6 +162,28 @@ begin
   ListArray.NextStep;
   if ListArray.IsMove then
     Inc(RowTemp);
+end;
+
+procedure TFormMain.Button1Click(Sender: TObject);
+var
+  sNewValue: string;
+  iNewValue: Integer;
+begin
+  // перехватим конверсионные ошибки
+  try
+    sNewValue := InputBox('Добавление нового элемента',
+      'Введите номер нового эламента', '5');
+
+    Trim(sNewValue);
+    iNewValue := StrToInt(sNewValue);
+
+    ListArray.Add(iNewValue);
+
+    Inc(RowTemp);
+  except
+    on Exception: EConvertError do
+      ShowMessage(Exception.Message);
+  end;
 end;
 
 procedure TFormMain.ButtonAddAfterClick(Sender: TObject);
@@ -310,7 +335,7 @@ begin
     for J := 0 to MyStringGrid.RowCount do
       MyStringGrid.Cells[I, J] := '';
 
-  ListArray := TArrayList.Create;
+  ListArray := TArrayList.Create(true);
   ListArray.Mode := Mode;
   // подписываемся на событие ThreadSyspended
   ListArray.OnThreadSyspended := OnThreadSyspended;
