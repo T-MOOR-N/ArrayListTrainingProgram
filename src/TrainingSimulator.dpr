@@ -4,7 +4,8 @@ uses
   Vcl.Forms,
   UMain in 'UMain.pas' {FormMain},
   UArrayList in 'UArrayList.pas',
-  UTest in 'UTest.pas' {FormTest};
+  UTest in 'UTest.pas' {FormTest},
+  UArrayListOrdered in 'UArrayListOrdered.pas';
 
 begin
   Application.Initialize;

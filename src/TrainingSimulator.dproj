@@ -101,6 +101,7 @@
             <Form>FormTest</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="UArrayListOrdered.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
