@@ -30,7 +30,7 @@ type
     StringGrid2: TStringGrid;
     ListBox: TListBox;
     ButtonClean: TButton;
-    Button1: TButton;
+    ButtonAdd: TButton;
     procedure FormCreate(Sender: TObject);
     procedure ComboBoxStructureChange(Sender: TObject);
     procedure ComboBoxModeChange(Sender: TObject);
@@ -46,7 +46,7 @@ type
     procedure Updater();
     procedure ButtonCleanClick(Sender: TObject);
     procedure ComboBoxModeSelect(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
+    procedure ButtonAddClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -71,6 +71,9 @@ var
 begin
   if Assigned(ListArray) then
   begin
+    ButtonAdd.Enabled := false;
+    ButtonAddFirst.Enabled := true;
+
     ListBox.ItemIndex := ListBox.Items.Count - 1;
     if ListBox.ItemIndex > 0 then
       if ListBox.Items[ListBox.ItemIndex] = '' then
@@ -113,6 +116,11 @@ begin
 
   if Assigned(QueueArray) then
   begin
+    ButtonAddAfter.Enabled := false;
+    ButtonAddFirst.Enabled := false;
+    ButtonAddBefore.Enabled := false;
+
+    ButtonAdd.Enabled := true;
     ListBox.ItemIndex := ListBox.Items.Count - 1;
     if ListBox.ItemIndex > 0 then
       if ListBox.Items[ListBox.ItemIndex] = '' then
@@ -123,36 +131,34 @@ begin
 
     if not(QueueArray.State = pqsNormal) then
     begin
-      ButtonAddAfter.Enabled := false;
-      ButtonAddFirst.Enabled := false;
-      ButtonAddBefore.Enabled := false;
+      ButtonAdd.Enabled := false;
       ButtonDelete.Enabled := false;
       ButtonNext.Enabled := true;
     end
     else
     begin
       if QueueArray.GetCount = 0 then
-        ButtonAddFirst.Enabled := true;
+        ButtonDelete.Enabled := false;
       if QueueArray.GetCount > 0 then
       begin
-        ButtonAddAfter.Enabled := true;
-        ButtonAddBefore.Enabled := true;
+        ButtonAdd.Enabled := true;
         ButtonDelete.Enabled := true;
+
+        ButtonNext.Enabled := false;
       end;
-      ButtonNext.Enabled := false;
-    end;
-    if ButtonNext.CanFocus then
-      ButtonNext.SetFocus;
+      if ButtonNext.CanFocus then
+        ButtonNext.SetFocus;
 
-    // костыль дл€ восстановлени€ цвета €чеек
-    if QueueArray.State = pqsNormal then
-    begin
-      for I := 0 to MyStringGrid.ColCount do
-        for J := 0 to MyStringGrid.RowCount do
-          MyStringGrid.Cells[I, J] := MyStringGrid.Cells[I, J];
+      // костыль дл€ восстановлени€ цвета €чеек
+      if QueueArray.State = pqsNormal then
+      begin
+        for I := 0 to MyStringGrid.ColCount do
+          for J := 0 to MyStringGrid.RowCount do
+            MyStringGrid.Cells[I, J] := MyStringGrid.Cells[I, J];
+      end;
     end;
+
   end;
-
 end;
 
 // ќбработчик событи€ ThreadSyspended  - когда отсановили поток
@@ -237,7 +243,7 @@ begin
   end;
 end;
 
-procedure TFormMain.Button1Click(Sender: TObject);
+procedure TFormMain.ButtonAddClick(Sender: TObject);
 var
   sID, sPriority: string;
   iID, iPriority: Integer;
