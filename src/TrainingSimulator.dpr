@@ -6,7 +6,8 @@ uses
   UArrayList in 'UArrayList.pas',
   UTest in 'UTest.pas' {FormTest},
   UArrayPriorityQueue in 'UArrayPriorityQueue.pas',
-  UPriorityQueueItem in 'UPriorityQueueItem.pas';
+  UPriorityQueueItem in 'UPriorityQueueItem.pas',
+  UEnumerations in 'UEnumerations.pas';
 
 begin
   Application.Initialize;

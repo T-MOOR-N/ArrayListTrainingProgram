@@ -21,6 +21,7 @@ begin
     list.Add(item2);
     list.Add(item3);
     list.Add(item4);
+    List.Delete;
 
   except
     on E: Exception do

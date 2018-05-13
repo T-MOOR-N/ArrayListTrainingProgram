@@ -215,7 +215,6 @@ object FormMain: TFormMain
         Width = 112
         Height = 25
         Caption = '>>'
-        Enabled = False
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -236,6 +235,15 @@ object FormMain: TFormMain
         Enabled = False
         TabOrder = 5
         OnClick = ButtonCleanClick
+      end
+      object Button1: TButton
+        Left = 159
+        Top = 82
+        Width = 112
+        Height = 25
+        Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+        TabOrder = 6
+        OnClick = Button1Click
       end
     end
     object ComboBoxMode: TComboBox

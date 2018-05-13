@@ -7,7 +7,7 @@ uses
   System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Grids, Vcl.ExtCtrls,
   Vcl.Menus, Vcl.Buttons, Vcl.Imaging.pngimage, Vcl.XPMan, UArrayList, WinProcs,
-  UTest;
+  UTest, UArrayPriorityQueue, UPriorityQueueItem, UEnumerations;
 
 type
   TFormMain = class(TForm)
@@ -30,6 +30,7 @@ type
     StringGrid2: TStringGrid;
     ListBox: TListBox;
     ButtonClean: TButton;
+    Button1: TButton;
     procedure FormCreate(Sender: TObject);
     procedure ComboBoxStructureChange(Sender: TObject);
     procedure ComboBoxModeChange(Sender: TObject);
@@ -45,6 +46,7 @@ type
     procedure Updater();
     procedure ButtonCleanClick(Sender: TObject);
     procedure ComboBoxModeSelect(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
 
   private
     { Private declarations }
@@ -55,6 +57,7 @@ type
 var
   FormMain: TFormMain;
   ListArray: TArrayList;
+  QueueArray: TArrayPriorityQueue;
   RowTemp: Integer;
   Mode: TOperatingMode = TOperatingMode.omDemo;
 
@@ -66,44 +69,90 @@ procedure TFormMain.Updater();
 var
   I, J: Integer;
 begin
-  ListBox.ItemIndex := ListBox.Items.Count - 1;
-  if ListBox.ItemIndex > 0 then
-    if ListBox.Items[ListBox.ItemIndex] = '' then
-      ListBox.ItemIndex := -1;
-
-  if MyStringGrid.RowCount < RowTemp + 1 then
-    MyStringGrid.RowCount := RowTemp + 1;
-
-  if not(ListArray.State = lsNormal) then
+  if Assigned(ListArray) then
   begin
-    ButtonAddAfter.Enabled := false;
-    ButtonAddFirst.Enabled := false;
-    ButtonAddBefore.Enabled := false;
-    ButtonDelete.Enabled := false;
-    ButtonNext.Enabled := true;
-  end
-  else
-  begin
-    if ListArray.GetCount = 0 then
-      ButtonAddFirst.Enabled := true;
-    if ListArray.GetCount > 0 then
+    ListBox.ItemIndex := ListBox.Items.Count - 1;
+    if ListBox.ItemIndex > 0 then
+      if ListBox.Items[ListBox.ItemIndex] = '' then
+        ListBox.ItemIndex := -1;
+
+    if MyStringGrid.RowCount < RowTemp + 1 then
+      MyStringGrid.RowCount := RowTemp + 1;
+
+    if not(ListArray.State = lsNormal) then
     begin
-      ButtonAddAfter.Enabled := true;
-      ButtonAddBefore.Enabled := true;
-      ButtonDelete.Enabled := true;
+      ButtonAddAfter.Enabled := false;
+      ButtonAddFirst.Enabled := false;
+      ButtonAddBefore.Enabled := false;
+      ButtonDelete.Enabled := false;
+      ButtonNext.Enabled := true;
+    end
+    else
+    begin
+      if ListArray.GetCount = 0 then
+        ButtonAddFirst.Enabled := true;
+      if ListArray.GetCount > 0 then
+      begin
+        ButtonAddAfter.Enabled := true;
+        ButtonAddBefore.Enabled := true;
+        ButtonDelete.Enabled := true;
+      end;
+      ButtonNext.Enabled := false;
     end;
-    ButtonNext.Enabled := false;
-  end;
-  if ButtonNext.CanFocus then
-    ButtonNext.SetFocus;
+    if ButtonNext.CanFocus then
+      ButtonNext.SetFocus;
 
-  // костыль дл€ восстановлени€ цвета €чеек
-  if ListArray.State = lsNormal then
-  begin
-    for I := 0 to MyStringGrid.ColCount do
-      for J := 0 to MyStringGrid.RowCount do
-        MyStringGrid.Cells[I, J] := MyStringGrid.Cells[I, J];
+    // костыль дл€ восстановлени€ цвета €чеек
+    if ListArray.State = lsNormal then
+    begin
+      for I := 0 to MyStringGrid.ColCount do
+        for J := 0 to MyStringGrid.RowCount do
+          MyStringGrid.Cells[I, J] := MyStringGrid.Cells[I, J];
+    end;
   end;
+
+  if Assigned(QueueArray) then
+  begin
+    ListBox.ItemIndex := ListBox.Items.Count - 1;
+    if ListBox.ItemIndex > 0 then
+      if ListBox.Items[ListBox.ItemIndex] = '' then
+        ListBox.ItemIndex := -1;
+
+    if MyStringGrid.RowCount < RowTemp + 1 then
+      MyStringGrid.RowCount := RowTemp + 1;
+
+    if not(QueueArray.State = pqsNormal) then
+    begin
+      ButtonAddAfter.Enabled := false;
+      ButtonAddFirst.Enabled := false;
+      ButtonAddBefore.Enabled := false;
+      ButtonDelete.Enabled := false;
+      ButtonNext.Enabled := true;
+    end
+    else
+    begin
+      if QueueArray.GetCount = 0 then
+        ButtonAddFirst.Enabled := true;
+      if QueueArray.GetCount > 0 then
+      begin
+        ButtonAddAfter.Enabled := true;
+        ButtonAddBefore.Enabled := true;
+        ButtonDelete.Enabled := true;
+      end;
+      ButtonNext.Enabled := false;
+    end;
+    if ButtonNext.CanFocus then
+      ButtonNext.SetFocus;
+
+    // костыль дл€ восстановлени€ цвета €чеек
+    if QueueArray.State = pqsNormal then
+    begin
+      for I := 0 to MyStringGrid.ColCount do
+        for J := 0 to MyStringGrid.RowCount do
+          MyStringGrid.Cells[I, J] := MyStringGrid.Cells[I, J];
+    end;
+  end;
+
 end;
 
 // ќбработчик событи€ ThreadSyspended  - когда отсановили поток
@@ -111,10 +160,14 @@ procedure TFormMain.OnThreadSyspended(Sender: TObject);
 var
   I: Integer;
 begin
-  // if not(Sender is TArrayList) then
-  // Exit;
-  for I := 1 to ListArray.GetMaxCount do
-    MyStringGrid.Cells[I - 1, RowTemp] := ListArray.GetItem(I);
+  if Assigned(ListArray) then
+    for I := 1 to ListArray.GetMaxCount do
+      MyStringGrid.Cells[I - 1, RowTemp] := ListArray.GetItem(I);
+
+  if Assigned(QueueArray) then
+    for I := 1 to QueueArray.GetMaxCount do
+      MyStringGrid.Cells[I - 1, RowTemp] := QueueArray.GetItem(I);
+
   Updater();
 end;
 
@@ -127,13 +180,20 @@ begin
   with MyStringGrid do
   begin
     Canvas.Brush.Color := clWindow;
+    if Assigned(ListArray) then
+    begin
 
-    if ListArray.temp <> -1 then
-      if (ARow = RowTemp) and (ACol = ListArray.temp - 1) then
-        Canvas.Brush.Color := clSkyBlue;
-    if ListArray.Add <> -1 then
-      if (ARow = RowTemp) and (ACol = ListArray.Add - 1) then
-        Canvas.Brush.Color := clSilver;
+      if ListArray.temp <> -1 then
+        if (ARow = RowTemp) and (ACol = ListArray.temp - 1) then
+          Canvas.Brush.Color := clSkyBlue;
+      if ListArray.Add <> -1 then
+        if (ARow = RowTemp) and (ACol = ListArray.Add - 1) then
+          Canvas.Brush.Color := clSilver;
+    end;
+    if Assigned(QueueArray) then
+    begin
+
+    end;
 
     txt := Cells[ACol, ARow];
     Canvas.FillRect(Rect);
@@ -142,23 +202,65 @@ begin
 end;
 
 procedure TFormMain.ButtonNextClick(Sender: TObject);
-// var
-// i: integer;
-// begin
-// for i := 1 to List.GetCount do
-// StringGrid1.Cells[i - 1, RowTemp] := List.GetItem(i);
 begin
-  case ListArray.Mode of
-    omControl:
-      begin
-        // заполнение формы с вопросами
-        FormTest.Load;
-        FormTest.ShowModal;
-      end;
+  if Assigned(ListArray) then
+  begin
+    case ListArray.Mode of
+      omControl:
+        begin
+          // заполнение формы с вопросами
+          FormTest.Load;
+          FormTest.ShowModal;
+        end;
+    end;
+    ListArray.NextStep;
+    if ListArray.IsMove then
+      Inc(RowTemp);
   end;
-  ListArray.NextStep;
-  if ListArray.IsMove then
+  if Assigned(QueueArray) then
+  begin
+    case QueueArray.Mode of
+      omControl:
+        begin
+          // заполнение формы с вопросами
+          FormTest.Load;
+          FormTest.ShowModal;
+        end;
+    end;
+    QueueArray.NextStep;
+    if QueueArray.IsMove then
+      Inc(RowTemp);
+  end;
+end;
+
+procedure TFormMain.Button1Click(Sender: TObject);
+var
+  sID, sPriority: string;
+  iID, iPriority: Integer;
+  Item: TPriorityQueueItem;
+begin
+  // перехватим конверсионные ошибки
+  try
+    sID := InputBox('ƒобавление нового элемента',
+      '¬ведите идентификатор нового элемента', '5');
+
+    Trim(sID);
+    iID := StrToInt(sID);
+
+    sPriority := InputBox('ƒобавление нового элемента',
+      '¬ведите приоритет', '3');
+
+    Trim(sPriority);
+    iPriority := StrToInt(sPriority);
+
+    Item := TPriorityQueueItem.Create(iID, iPriority);
+    QueueArray.Add(Item);
+
     Inc(RowTemp);
+  except
+    on Exception: EConvertError do
+      ShowMessage(Exception.Message);
+  end;
 end;
 
 procedure TFormMain.ButtonAddAfterClick(Sender: TObject);
@@ -268,13 +370,24 @@ begin
   end;
 end;
 
+// смена структуры
 procedure TFormMain.ComboBoxStructureChange(Sender: TObject);
 begin
-  if ComboBoxStructure.ItemIndex = 0 then
-    ComboBoxMode.Enabled := true;
+  case ComboBoxStructure.ItemIndex of
+    0:
+      begin
+        ComboBoxMode.Enabled := true;
+        FormCreate(Self);
+      end;
+    1:
+      begin
+        FormCreate(Self);
+      end;
+  end;
 
 end;
 
+// смена режима
 procedure TFormMain.ComboBoxModeChange(Sender: TObject);
 begin
   if ComboBoxMode.ItemIndex = 0 then
@@ -288,7 +401,7 @@ begin
     Mode := omDemo;
   if ComboBoxMode.ItemIndex = 1 then
     Mode := omControl;
-  FormCreate(self);
+  FormCreate(Self);
 end;
 
 procedure TFormMain.ComboBoxModeSelect(Sender: TObject);
@@ -297,7 +410,7 @@ begin
     Mode := omDemo;
   if ComboBoxMode.ItemIndex = 1 then
     Mode := omControl;
-  FormCreate(self);
+  FormCreate(Self);
 end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
@@ -306,14 +419,33 @@ var
   I: Integer;
   J: Integer;
 begin
+  // очистка стриггрида
   for I := 0 to MyStringGrid.ColCount do
     for J := 0 to MyStringGrid.RowCount do
       MyStringGrid.Cells[I, J] := '';
 
-  ListArray := TArrayList.Create;
-  ListArray.Mode := Mode;
-  // подписываемс€ на событие ThreadSyspended
-  ListArray.OnThreadSyspended := OnThreadSyspended;
+  case ComboBoxStructure.ItemIndex of
+    0:
+      begin
+        // неупор€доченный
+        ListArray := TArrayList.Create;
+        ListArray.Mode := Mode;
+        // подписываемс€ на событие ThreadSyspended
+        ListArray.OnThreadSyspended := OnThreadSyspended;
+
+        QueueArray := nil;
+      end;
+    1:
+      begin
+        // упор€доченный
+        QueueArray := TArrayPriorityQueue.Create;
+        QueueArray.Mode := Mode;
+        // подписываемс€ на событие ThreadSyspended
+        QueueArray.OnThreadSyspended := OnThreadSyspended;
+
+        ListArray := nil;
+      end;
+  end;
 
   RowTemp := -1;
 

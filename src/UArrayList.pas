@@ -2,14 +2,13 @@ unit UArrayList;
 
 interface
 
-uses SysUtils, SyncObjs, System.Classes, Windows;
+uses SysUtils, SyncObjs, System.Classes, Windows, UEnumerations;
 
 const
   Max = 6;
 
 type
   TListState = (lsNormal, lsAddFirst, lsAddbefore, lsAddAfter, lsDelete);
-  TOperatingMode = (omControl, omNormal, omDemo);
 
   TArrayList = class
   Private
@@ -385,8 +384,8 @@ begin
 
   AnswerKey := 4;
   Pause();
-  AddMessage(step.ToString + ') Извлечь элемент списка: [' + j.ToString + '] => ' +
-    SearchItem.ToString + ';');
+  AddMessage(step.ToString + ') Извлечь элемент списка: [' + j.ToString +
+    '] => ' + SearchItem.ToString + ';');
   Items[j] := -1;
 
   Pause();
