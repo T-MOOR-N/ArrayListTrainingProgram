@@ -182,7 +182,6 @@ begin
     Canvas.Brush.Color := clWindow;
     if Assigned(ListArray) then
     begin
-
       if ListArray.temp <> -1 then
         if (ARow = RowTemp) and (ACol = ListArray.temp - 1) then
           Canvas.Brush.Color := clSkyBlue;
@@ -192,11 +191,11 @@ begin
     end;
     if Assigned(QueueArray) then
     begin
-      if ListArray.temp <> -1 then
-        if (ARow = RowTemp) and (ACol = ListArray.temp - 1) then
+      if QueueArray.TempIndex <> -1 then
+        if (ARow = RowTemp) and (ACol = QueueArray.TempIndex - 1) then
           Canvas.Brush.Color := clSkyBlue;
-      if ListArray.Add <> -1 then
-        if (ARow = RowTemp) and (ACol = ListArray.Add - 1) then
+      if QueueArray.AddIndex <> -1 then
+        if (ARow = RowTemp) and (ACol = QueueArray.AddIndex - 1) then
           Canvas.Brush.Color := clSilver;
     end;
 

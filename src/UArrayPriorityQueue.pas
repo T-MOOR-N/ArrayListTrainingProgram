@@ -90,7 +90,7 @@ begin
   CritSec := TCriticalSection.Create;
 
   AddAnswers[0] := 'Проверка возможности вставки';
-  AddAnswers[1] := 'Поиск введенного пользователем значения';
+  AddAnswers[1] := 'Поиск места вставки';
   AddAnswers[2] := 'Продолжаем поиск, проверяем очередную ячейку';
   AddAnswers[3] := 'Сдвиг ячеек вправо';
   AddAnswers[4] := 'Вставка';
@@ -98,12 +98,10 @@ begin
   AddAnswers[6] := 'Сдвиг текущей ячейки вправо';
 
   DeleteAnswers[0] := 'Проверка возможности удаления';
-  DeleteAnswers[1] := 'Поиск введенного пользователем значения';
-  DeleteAnswers[2] := 'Продолжаем поиск, проверяем очередную ячейку';
-  DeleteAnswers[3] := 'Извлечь элемент списка';
-  DeleteAnswers[4] := 'Сдвиг ячеек влево';
-  DeleteAnswers[5] := 'Сдвиг текущей ячейки влево';
-  DeleteAnswers[6] := 'Уменьшение COUNT на 1';
+  DeleteAnswers[1] := 'Извлечь элемент списка';
+  DeleteAnswers[2] := 'Сдвиг ячеек влево';
+  DeleteAnswers[3] := 'Сдвиг текущей ячейки влево';
+  DeleteAnswers[4] := 'Уменьшение COUNT на 1';
 end;
 
 Function TArrayPriorityQueue.GetCount;
