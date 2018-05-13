@@ -5,7 +5,9 @@ uses
   UMain in 'UMain.pas' {FormMain},
   UArrayList in 'UArrayList.pas',
   UTest in 'UTest.pas' {FormTest},
-  UArrayListOrdered in 'UArrayListOrdered.pas';
+  UArrayPriorityQueue in 'UArrayPriorityQueue.pas',
+  UPriorityQueueItem in 'UPriorityQueueItem.pas',
+  UEnumerations in 'UEnumerations.pas';
 
 begin
   Application.Initialize;

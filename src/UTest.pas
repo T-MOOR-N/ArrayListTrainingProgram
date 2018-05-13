@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
-  System.Generics.Collections, UArrayList;
+  System.Generics.Collections, UArrayList, UArrayPriorityQueue;
 
 type
   TFormTest = class(TForm)
@@ -53,47 +53,96 @@ var
 begin
   ListBox.Clear;
   Randomize;
-  UniqueAnswer := TList<integer>.Create;
-  // 0 - верный ключ
-  case ListArray.State of
-    lsAddAfter, lsAddbefore, lsAddFirst:
-      begin
-        for i := 0 to 3 do
-          // генерируем случайные ключ ответа, пока не найдем уникальный
-          while UniqueAnswer.Count <> 4 do
-          begin
-            index := Random(7);
-            if index <> ListArray.AnswerKey then
-              if not UniqueAnswer.Contains(index) then
-                UniqueAnswer.Add(index)
-          end;
 
-        for i := 0 to 3 do
+  if Assigned(ListArray) then
+  begin
+    UniqueAnswer := TList<integer>.Create;
+    // 0 - верный ключ
+    case ListArray.State of
+      lsAddAfter, lsAddbefore, lsAddFirst:
         begin
-          ListBox.Items.Add(AddAnswers[UniqueAnswer.Items[i]]);
-        end;
-        rIndex := Random(4);
-        ListBox.Items[rIndex] := AddAnswers[ListArray.AnswerKey];
-      end;
-    lsDelete:
-      begin
-        for i := 0 to 3 do
-          // генерируем случайные ключ ответа, пока не найдем уникальный
-          while UniqueAnswer.Count <> 4 do
-          begin
-            index := Random(7);
-            if index <> ListArray.AnswerKey then
-              if not UniqueAnswer.Contains(index) then
-                UniqueAnswer.Add(index)
-          end;
+          for i := 0 to 3 do
+            // генерируем случайные ключ ответа, пока не найдем уникальный
+            while UniqueAnswer.Count <> 4 do
+            begin
+              index := Random(7);
+              if index <> ListArray.AnswerKey then
+                if not UniqueAnswer.Contains(index) then
+                  UniqueAnswer.Add(index)
+            end;
 
-        for i := 0 to 3 do
-        begin
-          ListBox.Items.Add(DeleteAnswers[UniqueAnswer.Items[i]]);
+          for i := 0 to 3 do
+          begin
+            ListBox.Items.Add(AddAnswers[UniqueAnswer.Items[i]]);
+          end;
+          rIndex := Random(4);
+          ListBox.Items[rIndex] := AddAnswers[ListArray.AnswerKey];
         end;
-        rIndex := Random(4);
-        ListBox.Items[rIndex] := DeleteAnswers[ListArray.AnswerKey];
-      end;
+      lsDelete:
+        begin
+          for i := 0 to 3 do
+            // генерируем случайные ключ ответа, пока не найдем уникальный
+            while UniqueAnswer.Count <> 4 do
+            begin
+              index := Random(7);
+              if index <> ListArray.AnswerKey then
+                if not UniqueAnswer.Contains(index) then
+                  UniqueAnswer.Add(index)
+            end;
+
+          for i := 0 to 3 do
+          begin
+            ListBox.Items.Add(DeleteAnswers[UniqueAnswer.Items[i]]);
+          end;
+          rIndex := Random(4);
+          ListBox.Items[rIndex] := DeleteAnswers[ListArray.AnswerKey];
+        end;
+    end;
+  end;
+  if Assigned(QueueArray) then
+  begin
+    UniqueAnswer := TList<integer>.Create;
+    // 0 - верный ключ
+    case QueueArray.State of
+      pqsAdd:
+        begin
+          for i := 0 to 3 do
+            // генерируем случайные ключ ответа, пока не найдем уникальный
+            while UniqueAnswer.Count <> 4 do
+            begin
+              index := Random(7);
+              if index <> QueueArray.AnswerKey then
+                if not UniqueAnswer.Contains(index) then
+                  UniqueAnswer.Add(index)
+            end;
+
+          for i := 0 to 3 do
+          begin
+            ListBox.Items.Add(AddAnswers[UniqueAnswer.Items[i]]);
+          end;
+          rIndex := Random(4);
+          ListBox.Items[rIndex] := AddAnswers[QueueArray.AnswerKey];
+        end;
+      pqsDelete:
+        begin
+          for i := 0 to 3 do
+            // генерируем случайные ключ ответа, пока не найдем уникальный
+            while UniqueAnswer.Count <> 4 do
+            begin
+              index := Random(5);
+              if index <> QueueArray.AnswerKey then
+                if not UniqueAnswer.Contains(index) then
+                  UniqueAnswer.Add(index)
+            end;
+
+          for i := 0 to 3 do
+          begin
+            ListBox.Items.Add(DeleteAnswers[UniqueAnswer.Items[i]]);
+          end;
+          rIndex := Random(4);
+          ListBox.Items[rIndex] := DeleteAnswers[QueueArray.AnswerKey];
+        end;
+    end;
   end;
 end;
 

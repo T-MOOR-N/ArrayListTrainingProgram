@@ -215,7 +215,6 @@ object FormMain: TFormMain
         Width = 112
         Height = 25
         Caption = '>>'
-        Enabled = False
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11

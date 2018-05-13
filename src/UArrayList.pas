@@ -2,14 +2,13 @@ unit UArrayList;
 
 interface
 
-uses SysUtils, SyncObjs, System.Classes, Windows;
+uses SysUtils, SyncObjs, System.Classes, Windows, UEnumerations;
 
 const
   Max = 6;
 
 type
-  TListState = (lsNormal, lsAdd, lsAddFirst, lsAddbefore, lsAddAfter, lsDelete);
-  TOperatingMode = (omControl, omNormal, omDemo);
+  TListState = (lsNormal, lsAddFirst, lsAddbefore, lsAddAfter, lsDelete);
 
   TArrayList = class
   Private
@@ -24,9 +23,7 @@ type
     // класса, а не произвольную процедуру.
     FOnThreadSuspended: TNotifyEvent;
     FIsMove: boolean;
-    IsOrdered: boolean;
 
-    Procedure AddTask();
     Procedure AddFirstTask();
     Procedure AddAfterTask();
     Procedure AddBeforeTask();
@@ -40,12 +37,10 @@ type
     property step: integer read GetStep write SetStep;
   Public
     ThreadId: integer;
-    TempIndex: integer;
-    AddIndex: integer;
+    temp, Add: integer;
     AnswerKey: integer;
 
-    Constructor Create(Ordered: boolean = false);
-    Procedure Add(iNewValue: integer);
+    Constructor Create();
     Procedure AddFirst(iNewValue: integer);
     Procedure AddAfter(iNewValue: integer; iSearchValue: integer);
     Procedure AddBefore(iNewValue: integer; iSearchValue: integer);
@@ -72,7 +67,7 @@ type
   End;
 
 var
-  AddAnswers: array [0 .. 7] of string;
+  AddAnswers: array [0 .. 6] of string;
   DeleteAnswers: array [0 .. 6] of string;
   allowmessage: boolean;
 
@@ -88,15 +83,14 @@ var
   SearchItem: integer;
 {$REGION 'Public functions'}
 
-Constructor TArrayList.Create(Ordered: boolean = false);
+Constructor TArrayList.Create();
 var
   i: integer;
 begin
-  IsOrdered := Ordered;
   Count := 0;
   step := 1;
-  TempIndex := -1;
-  AddIndex := -1;
+  temp := -1;
+  Add := -1;
   allowmessage := true;
   for i := 1 to Max do
     Items[i] := -1;
@@ -109,7 +103,6 @@ begin
   AddAnswers[4] := 'Вставка';
   AddAnswers[5] := 'Увеличение COUNT на 1';
   AddAnswers[6] := 'Сдвиг текущей ячейки вправо';
-  AddAnswers[7] := 'Поиск места для вставки';
 
   DeleteAnswers[0] := 'Проверка возможности удаления';
   DeleteAnswers[1] := 'Поиск введенного пользователем значения';
@@ -151,23 +144,10 @@ begin
 end;
 {$REGION 'ThreadWrapper'}
 
-procedure TArrayList.Add(iNewValue: integer);
-var
-  id: longword;
-begin
-  if not IsOrdered then
-    exit;
-  State := lsAdd;
-  NewItem := iNewValue;
-  ThreadId := BeginThread(nil, 0, @TArrayList.AddTask, Self, 0, id);
-end;
-
 procedure TArrayList.AddFirst(iNewValue: integer);
 var
   id: longword;
 begin
-  if IsOrdered then
-    exit;
   State := lsAddFirst;
   NewItem := iNewValue;
   ThreadId := BeginThread(nil, 0, @TArrayList.AddFirstTask, Self, 0, id);
@@ -178,8 +158,6 @@ procedure TArrayList.AddAfter(iNewValue: integer; iSearchValue: integer);
 var
   id: longword;
 begin
-  if IsOrdered then
-    exit;
   NewItem := iNewValue;
   SearchItem := iSearchValue;
   State := lsAddAfter;
@@ -190,8 +168,6 @@ procedure TArrayList.AddBefore(iNewValue: integer; iSearchValue: integer);
 var
   id: longword;
 begin
-  if IsOrdered then
-    exit;
   NewItem := iNewValue;
   SearchItem := iSearchValue;
   State := lsAddbefore;
@@ -210,101 +186,6 @@ end;
 {$ENDREGION}
 {$ENDREGION}
 {$REGION 'Task functions'}
-
-Procedure TArrayList.AddTask();
-var
-  i, j: integer;
-begin
-  if Count <> Max then
-  begin
-    if Count = 0 then
-      // добавление первого
-      AddFirstTask()
-    else
-    begin
-      CritSec.Enter;
-      AddMessage('Добавление в упорядоченный список');
-      step := 1;
-
-      AnswerKey := 0;
-      Pause();
-      AddMessage(step.ToString + ') Проверка возможности вставки: ОК;');
-
-      AnswerKey := 7;
-      Pause();
-      AddMessage(step.ToString + 'Поиск места для вставки');
-      // поиск места вставки
-      for j := 1 to Count do
-      begin
-        TempIndex := j;
-        if NewItem < Items[j] then
-          break;
-
-        AnswerKey := 2;
-        Pause();
-        AddMessage(step.ToString +
-          ') Продолжаем поиск, проверяем очередную ячейку: [' + j.ToString +
-          '] <' + SearchItem.ToString + ' , переходим к следующей ячейке;');
-      end;
-
-      if j > Count then
-      begin
-        AnswerKey := 2;
-        Pause();
-        AddMessage(step.ToString +
-          ') Продолжаем поиск, проверяем очередную ячейку: место для вставки найдено, ['
-          + j.ToString + '] > ' + SearchItem.ToString + ' , конец поиска;');
-      end
-      else
-      begin
-        AnswerKey := 2;
-        Pause();
-        AddMessage(step.ToString +
-          ') Продолжаем поиск, проверяем очередную ячейку: место для вставки найдено, ['
-          + j.ToString + '] < ' + SearchItem.ToString + ' , конец поиска;');
-      end;
-
-      AnswerKey := 3;
-      Pause();
-      AddMessage(step.ToString +
-        ') Сдвиг ячеек вправо: перемещаем вправо содержимое ячеек начиная с ячейки ['
-        + (Count).ToString + '];');
-
-      IsMove := true;
-      for i := Count + 1 downto TempIndex + 1 do
-      begin
-        AnswerKey := 6;
-        Pause();
-        AddMessage(step.ToString +
-          ') Сдвиг текущей вправо: перемещаем содержимое ячейки [' + (i - 1)
-          .ToString + '] в ячейку [' + i.ToString + '];');
-
-        Items[i] := Items[i - 1];
-        Items[i - 1] := -1;
-
-      end;
-      IsMove := false;
-
-      AnswerKey := 4;
-      Pause();
-      AddMessage(step.ToString + ') Вставка: заносим значение ' +
-        NewItem.ToString + ' в ячейку [' + TempIndex.ToString + '];');
-
-      AddIndex := TempIndex;
-      Items[TempIndex] := NewItem;
-
-      AnswerKey := 5;
-      Pause();
-      AddMessage(step.ToString + ') Увеличение COUNT на 1:' + ' COUNT = ' +
-        Count.ToString + ' + 1 = ' + IntToStr(Count + 1) + ';');
-      Inc(Count);
-    end;
-  end
-  else
-    AddMessage(step.ToString +
-      ') Проверка возможности вставки: Список заполнен;');
-  Finish();
-end;
 
 Procedure TArrayList.AddFirstTask();
 begin
@@ -355,26 +236,25 @@ begin
   AnswerKey := 1;
   Pause();
 
-  TempIndex := _Search(SearchItem);
-  if TempIndex = 0 then
+  temp := _Search(SearchItem);
+  if temp = 0 then
     Finish();
 
   AnswerKey := 3;
   Pause();
 
-  if TempIndex = Count then
+  if temp = Count + 1 then
   begin
     AddMessage(step.ToString + ') Сдвиг ячеек вправо: не нужен;');
   end
   else
   begin
-
     AddMessage(step.ToString +
       ') Сдвиг ячеек вправо: перемещаем вправо содержимое ячеек начиная с ячейки ['
       + (Count).ToString + '];');
 
     IsMove := true;
-    for i := Count downto TempIndex + 1 do
+    for i := Count downto temp + 1 do
     begin
       AnswerKey := 6;
       Pause();
@@ -390,10 +270,10 @@ begin
   AnswerKey := 4;
   Pause();
   AddMessage(step.ToString + ') Вставка: заносим значение ' + NewItem.ToString +
-    ' в ячейку [' + (TempIndex + 1).ToString + '];');
+    ' в ячейку [' + (temp + 1).ToString + '];');
 
-  AddIndex := TempIndex + 1;
-  Items[TempIndex + 1] := NewItem;
+  Add := temp + 1;
+  Items[temp + 1] := NewItem;
 
   AnswerKey := 5;
   Pause();
@@ -431,8 +311,8 @@ begin
   AnswerKey := 1;
   Pause();
 
-  TempIndex := _Search(SearchItem);
-  if TempIndex = 0 then
+  temp := _Search(SearchItem);
+  if temp = 0 then
     Finish();
 
   AnswerKey := 3;
@@ -442,7 +322,7 @@ begin
     + (Count).ToString + '];');
 
   IsMove := true;
-  for i := Count + 1 downto TempIndex + 1 do
+  for i := Count + 1 downto temp + 1 do
   begin
     AnswerKey := 6;
     Pause();
@@ -459,10 +339,10 @@ begin
   AnswerKey := 4;
   Pause();
   AddMessage(step.ToString + ') Вставка: заносим значение ' + NewItem.ToString +
-    ' в ячейку [' + TempIndex.ToString + '];');
+    ' в ячейку [' + temp.ToString + '];');
 
-  AddIndex := TempIndex;
-  Items[TempIndex] := NewItem;
+  Add := temp;
+  Items[temp] := NewItem;
 
   AnswerKey := 5;
   Pause();
@@ -548,7 +428,7 @@ begin
 
   for i := 1 to Count do
   begin
-    TempIndex := i;
+    temp := i;
     if (aName = Items[i]) then
     begin
       result := i;
@@ -587,8 +467,8 @@ begin
   // Pause();
   AddMessage('');
   State := lsNormal;
-  TempIndex := -1;
-  AddIndex := -1;
+  temp := -1;
+  Add := -1;
   step := 1;
   GenericMyEvent;
   CritSec.Leave;
