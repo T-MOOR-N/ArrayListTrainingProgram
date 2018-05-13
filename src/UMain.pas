@@ -138,7 +138,10 @@ begin
     else
     begin
       if QueueArray.GetCount = 0 then
+      begin
         ButtonDelete.Enabled := false;
+        ButtonNext.Enabled := false;
+      end;
       if QueueArray.GetCount > 0 then
       begin
         ButtonAdd.Enabled := true;
@@ -344,7 +347,10 @@ begin
     Trim(sValue);
     iValue := StrToInt(sValue);
 
-    ListArray.Delete(iValue);
+    if Assigned(ListArray) then
+      ListArray.Delete(iValue);
+    if Assigned(QueueArray) then
+      QueueArray.Delete();
     Inc(RowTemp);
   except
     on Exception: EConvertError do

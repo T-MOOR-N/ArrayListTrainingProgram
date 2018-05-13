@@ -6,9 +6,6 @@
         <Projects Include="TrainingSimulator.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="ConsoleTestApp.dproj">
-            <Dependencies/>
-        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -26,23 +23,14 @@
     <Target Name="TrainingSimulator:Make">
         <MSBuild Projects="TrainingSimulator.dproj" Targets="Make"/>
     </Target>
-    <Target Name="ConsoleTestApp">
-        <MSBuild Projects="ConsoleTestApp.dproj"/>
-    </Target>
-    <Target Name="ConsoleTestApp:Clean">
-        <MSBuild Projects="ConsoleTestApp.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="ConsoleTestApp:Make">
-        <MSBuild Projects="ConsoleTestApp.dproj" Targets="Make"/>
-    </Target>
     <Target Name="Build">
-        <CallTarget Targets="TrainingSimulator;ConsoleTestApp"/>
+        <CallTarget Targets="TrainingSimulator"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="TrainingSimulator:Clean;ConsoleTestApp:Clean"/>
+        <CallTarget Targets="TrainingSimulator:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="TrainingSimulator:Make;ConsoleTestApp:Make"/>
+        <CallTarget Targets="TrainingSimulator:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
