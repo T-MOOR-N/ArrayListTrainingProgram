@@ -189,29 +189,47 @@ begin
       AddFirst()
     else
     begin
+      AddMessage('ƒобавление в список элемента ' + NewItem.ToString +
+        ' (COUNT = ' + Count.ToString + ')');
+
+      AnswerKey := 0;
+      Pause();
+      AddMessage(step.ToString + ') ѕроверка возможности вставки: ќ ;');
+
+      AnswerKey := 1;
+      Pause();
+
       // поиск места вставки
       TempIndex := Search();
 
       AnswerKey := 3;
       Pause();
-      AddMessage(step.ToString +
-        ') —двиг €чеек вправо: перемещаем вправо содержимое €чеек начина€ с €чейки ['
-        + (Count).ToString + '];');
 
-      IsMove := true;
-      for i := Count + 1 downto TempIndex + 1 do
+      if TempIndex = Count + 1 then
       begin
-        AnswerKey := 6;
-        Pause();
+        AddMessage(step.ToString + ') —двиг €чеек вправо: не нужен;');
+      end
+      else
+      begin
         AddMessage(step.ToString +
-          ') —двиг текущей вправо: перемещаем содержимое €чейки [' + (i - 1)
-          .ToString + '] в €чейку [' + i.ToString + '];');
+          ') —двиг €чеек вправо: перемещаем вправо содержимое €чеек начина€ с €чейки ['
+          + (Count).ToString + '];');
 
-        Items[i] := Items[i - 1];
-        Items[i - 1] := nil;
+        IsMove := true;
+        for i := Count + 1 downto TempIndex + 1 do
+        begin
+          AnswerKey := 6;
+          Pause();
+          AddMessage(step.ToString +
+            ') —двиг текущей вправо: перемещаем содержимое €чейки [' + (i - 1)
+            .ToString + '] в €чейку [' + i.ToString + '];');
 
+          Items[i] := Items[i - 1];
+          Items[i - 1] := nil;
+
+        end;
+        IsMove := false;
       end;
-      IsMove := false;
 
       AnswerKey := 4;
       Pause();
@@ -242,9 +260,12 @@ var
 begin
   result := 0;
 
+  AddMessage(step.ToString +
+    ') ѕоиск места вставки: первый по пор€дку элемент c приоритетом >= нового ;');
+
   for i := 1 to Count do
   begin
-    result := i;
+    TempIndex := i;
     if Items[i].GetPriority >= NewItem.GetPriority then
       break;
 
@@ -254,14 +275,12 @@ begin
       ') ѕродолжаем поиск, провер€ем очередную €чейку: [' + i.ToString + '] <>'
       + SearchItem.ToString + ' , переходим к следующей €чейке;');
   end;
+  result := i;
 
-  if result <> 0 then
-  begin
-    AnswerKey := 2;
-    Pause();
-    AddMessage(step.ToString +
-      ') ѕродолжаем поиск, провер€ем очередную €чейку: элемент найден, конец поиска;');
-  end;
+  AnswerKey := 2;
+  Pause();
+  AddMessage(step.ToString +
+    ') ѕродолжаем поиск, провер€ем очередную €чейку: элемент найден, конец поиска;');
 end;
 
 procedure TArrayPriorityQueue.DeleteTask();

@@ -192,7 +192,12 @@ begin
     end;
     if Assigned(QueueArray) then
     begin
-
+      if ListArray.temp <> -1 then
+        if (ARow = RowTemp) and (ACol = ListArray.temp - 1) then
+          Canvas.Brush.Color := clSkyBlue;
+      if ListArray.Add <> -1 then
+        if (ARow = RowTemp) and (ACol = ListArray.Add - 1) then
+          Canvas.Brush.Color := clSilver;
     end;
 
     txt := Cells[ACol, ARow];

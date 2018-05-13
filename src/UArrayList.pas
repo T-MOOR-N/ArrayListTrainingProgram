@@ -243,13 +243,12 @@ begin
   AnswerKey := 3;
   Pause();
 
-  if temp = Count then
+  if temp = Count + 1 then
   begin
     AddMessage(step.ToString + ') —двиг €чеек вправо: не нужен;');
   end
   else
   begin
-
     AddMessage(step.ToString +
       ') —двиг €чеек вправо: перемещаем вправо содержимое €чеек начина€ с €чейки ['
       + (Count).ToString + '];');
