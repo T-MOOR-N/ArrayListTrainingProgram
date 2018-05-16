@@ -49,6 +49,7 @@ type
     Function GetMaxCount: integer;
     Function GetItem(index: integer): string;
     procedure NextStep();
+    function Contains(const Value: integer): boolean;
 
     // Эта процедура проверяет задан ли обработчик события. И, если задан, запускает его.
     procedure DoMyEvent; // dynamic;
@@ -183,6 +184,17 @@ begin
   ThreadId := BeginThread(nil, 0, @TArrayList.DeleteTask, Self, 0, id);
 end;
 
+function TArrayList.Contains(const Value: integer): boolean;
+var
+  i: integer;
+begin
+  result := true;
+  for i := 1 to Count do
+    if Items[i] = Value then
+      exit;
+  result := false;
+end;
+
 {$ENDREGION}
 {$ENDREGION}
 {$REGION 'Task functions'}
@@ -243,7 +255,7 @@ begin
   AnswerKey := 3;
   Pause();
 
-  if temp = Count + 1 then
+  if temp = Count then
   begin
     AddMessage(step.ToString + ') Сдвиг ячеек вправо: не нужен;');
   end

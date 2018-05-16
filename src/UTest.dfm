@@ -30,7 +30,7 @@ object FormTest: TFormTest
       OnClick = Button1Click
     end
   end
-  object ListBox: TListBox
+  object ListBoxAnswer: TListBox
     Left = 0
     Top = 0
     Width = 405

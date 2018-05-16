@@ -42,6 +42,7 @@ type
     Function GetMaxCount: integer;
     Function GetItem(index: integer): string;
     procedure NextStep();
+    function Contains(const value: integer): boolean;
 
     // Эта процедура проверяет задан ли обработчик события. И, если задан, запускает его.
     procedure DoMyEvent;
@@ -98,7 +99,7 @@ begin
   AddAnswers[6] := 'Сдвиг текущей ячейки вправо';
 
   DeleteAnswers[0] := 'Проверка возможности удаления';
-  DeleteAnswers[1] := 'Извлечь элемент списка';
+  DeleteAnswers[1] := 'Извлечь элемент приоритетной очережи';
   DeleteAnswers[2] := 'Сдвиг ячеек влево';
   DeleteAnswers[3] := 'Сдвиг текущей ячейки влево';
   DeleteAnswers[4] := 'Уменьшение COUNT на 1';
@@ -152,6 +153,17 @@ begin
   ThreadId := BeginThread(nil, 0, @TArrayPriorityQueue.DeleteTask, Self, 0, id);
 end;
 
+function TArrayPriorityQueue.Contains(const value: integer): boolean;
+var
+  i: integer;
+begin
+  result := true;
+  for i := 1 to Count do
+    if Items[i].GetID = value then
+      exit;
+  result := false;
+end;
+
 {$ENDREGION}
 {$ENDREGION}
 {$REGION 'Task functions'}
@@ -161,8 +173,8 @@ var
   i: integer;
   procedure AddFirst();
   begin
-    AddMessage('Добавление в список первого элемента ' + NewItem.ToString +
-      ' (COUNT = ' + Count.ToString + ')');
+    AddMessage('Добавление первого элемента ' + NewItem.GetID.ToString +
+      ' с приоритетом ' + NewItem.GetPriority.ToString);
     step := 1;
 
     AnswerKey := 4;
@@ -187,8 +199,8 @@ begin
       AddFirst()
     else
     begin
-      AddMessage('Добавление в список элемента ' + NewItem.ToString +
-        ' (COUNT = ' + Count.ToString + ')');
+      AddMessage('Добавление элемента ' + NewItem.GetID.ToString +
+        ' с приоритетом ' + NewItem.GetPriority.ToString);
 
       AnswerKey := 0;
       Pause();
@@ -247,7 +259,7 @@ begin
   else
   begin
     AddMessage(step.ToString +
-      ') Проверка возможности вставки: Список заполнен;');
+      ') Проверка возможности вставки: Приоритетная очередь заполнена;');
   end;
   Finish();
 end;
@@ -269,16 +281,15 @@ begin
 
     AnswerKey := 2;
     Pause();
-    AddMessage(step.ToString +
-      ') Продолжаем поиск, проверяем очередную ячейку: [' + i.ToString + '] <>'
-      + SearchItem.ToString + ' , переходим к следующей ячейке;');
+    AddMessage(step.ToString + ') проверяем ячейку [' + i.ToString +
+      '] : приоритет меньше - идем дальше;');
   end;
   result := i;
 
   AnswerKey := 2;
   Pause();
-  AddMessage(step.ToString +
-    ') Продолжаем поиск, проверяем очередную ячейку: элемент найден, конец поиска;');
+  AddMessage(step.ToString + ') проверяем ячейку [' + i.ToString +
+    '] : приоритет НЕ меньше - поиск закончен;');
 end;
 
 procedure TArrayPriorityQueue.DeleteTask();
@@ -287,8 +298,7 @@ var
 begin
   CritSec.Enter;
 
-  AddMessage('Удаление элемента ' + Items[Count].ToString + ' (COUNT = ' +
-    Count.ToString + ')');
+  AddMessage('Удаление из очереди, (COUNT = ' + Count.ToString + ')');
 
   AnswerKey := 0;
   Pause();
@@ -302,8 +312,8 @@ begin
 
   AnswerKey := 4;
   Pause();
-  AddMessage(step.ToString + ') Извлечь элемент списка: [' + Count.ToString +
-    '] => ' + SearchItem.ToString + ';');
+  AddMessage(step.ToString + ') Извлечь элемент из приориттной очереди: [' +
+    Count.ToString + '] => ' + SearchItem.ToString + ';');
   Items[Count] := nil;
 
   AnswerKey := 6;

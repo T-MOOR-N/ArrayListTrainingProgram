@@ -1,10 +1,9 @@
 object FormMain: TFormMain
   Left = 0
   Top = 0
-  ActiveControl = MyStringGrid
   BorderStyle = bsSingle
   Caption = #1058#1088#1077#1085#1072#1078#1077#1088#1085#1072#1103' '#1087#1088#1086#1075#1088#1072#1084#1084#1072
-  ClientHeight = 718
+  ClientHeight = 750
   ClientWidth = 1018
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -20,11 +19,12 @@ object FormMain: TFormMain
     Left = 0
     Top = 0
     Width = 1018
-    Height = 718
+    Height = 731
     Align = alClient
     Color = clMenu
     ParentBackground = False
     TabOrder = 0
+    ExplicitHeight = 718
     object Label4: TLabel
       Left = 8
       Top = 113
@@ -163,7 +163,7 @@ object FormMain: TFormMain
       OnChange = ComboBoxStructureChange
       Items.Strings = (
         #1053#1077#1091#1087#1086#1088#1103#1076#1086#1095#1077#1085#1085#1099#1081' '#1089#1087#1080#1089#1086#1082
-        #1059#1087#1086#1088#1103#1076#1086#1095#1077#1085#1085#1099#1081' '#1089#1087#1080#1089#1086#1082)
+        #1055#1088#1080#1086#1088#1080#1090#1077#1090#1085#1072#1103' '#1086#1095#1077#1088#1077#1076#1100)
     end
     object PanelListArray: TPanel
       Left = 8
@@ -247,7 +247,6 @@ object FormMain: TFormMain
         Width = 112
         Height = 25
         Caption = #1054#1095#1080#1089#1090#1080#1090#1100
-        Enabled = False
         TabOrder = 5
         OnClick = ButtonCleanClick
       end
@@ -335,10 +334,10 @@ object FormMain: TFormMain
       TabOrder = 6
     end
     object PanelPriorityQueue: TPanel
-      Left = 303
-      Top = 528
+      Left = 8
+      Top = 517
       Width = 289
-      Height = 183
+      Height = 195
       TabOrder = 7
       object Label6: TLabel
         Left = 17
@@ -366,7 +365,7 @@ object FormMain: TFormMain
       end
       object ButtonNext2: TBitBtn
         Left = 159
-        Top = 144
+        Top = 153
         Width = 112
         Height = 25
         Caption = '>>'
@@ -383,11 +382,10 @@ object FormMain: TFormMain
       end
       object ButtonClean2: TButton
         Left = 17
-        Top = 144
+        Top = 153
         Width = 112
         Height = 25
         Caption = #1054#1095#1080#1089#1090#1080#1090#1100
-        Enabled = False
         TabOrder = 2
         OnClick = ButtonCleanClick
       end
@@ -418,8 +416,24 @@ object FormMain: TFormMain
         MaxValue = 99
         MinValue = 1
         TabOrder = 5
-        Value = 0
+        Value = 1
       end
     end
+  end
+  object StatusBar1: TStatusBar
+    Left = 0
+    Top = 731
+    Width = 1018
+    Height = 19
+    BiDiMode = bdLeftToRight
+    Panels = <
+      item
+        Text = #1055#1088#1072#1074#1080#1083#1100#1085#1099#1093' '#1086#1090#1074#1077#1090#1086#1074
+        Width = 150
+      end
+      item
+        Width = 50
+      end>
+    ParentBiDiMode = False
   end
 end

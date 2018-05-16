@@ -8,42 +8,43 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Grids, Vcl.ExtCtrls,
   Vcl.Menus, Vcl.Buttons, Vcl.Imaging.pngimage, Vcl.XPMan, UArrayList, WinProcs,
   UTest, UArrayPriorityQueue, UPriorityQueueItem, UEnumerations,
-  Vcl.Samples.Spin;
+  Vcl.Samples.Spin, Vcl.ComCtrls, System.UITypes;
 
 type
   TFormMain = class(TForm)
     Panel1: TPanel;
-    Panel2: TPanel;
-    PanelListArray: TPanel;
-    ComboBoxMode: TComboBox;
-    ComboBoxStructure: TComboBox;
-    Label1: TLabel;
-    Label2: TLabel;
     Label4: TLabel;
     Label5: TLabel;
+    Panel2: TPanel;
+    Label1: TLabel;
+    Label2: TLabel;
     Label3: TLabel;
+    MyStringGrid: TStringGrid;
+    ComboBoxStructure: TComboBox;
+    PanelListArray: TPanel;
+    Label8: TLabel;
+    Label9: TLabel;
     ButtonAddAfter: TButton;
     ButtonAddFirst: TButton;
     ButtonAddBefore: TButton;
     ButtonDelete: TButton;
     ButtonNext: TBitBtn;
-    MyStringGrid: TStringGrid;
+    ButtonClean: TButton;
+    SpinEditListID1: TSpinEdit;
+    SpinEditListID2: TSpinEdit;
+    ComboBoxMode: TComboBox;
     StringGrid2: TStringGrid;
     ListBox: TListBox;
-    ButtonClean: TButton;
     PanelPriorityQueue: TPanel;
+    Label6: TLabel;
+    Label7: TLabel;
     ButtonDelete2: TButton;
     ButtonNext2: TBitBtn;
     ButtonClean2: TButton;
     ButtonAdd: TButton;
-    SpinEditListID1: TSpinEdit;
     SpinEditPriority: TSpinEdit;
     SpinEditID: TSpinEdit;
-    Label6: TLabel;
-    Label7: TLabel;
-    Label8: TLabel;
-    SpinEditListID2: TSpinEdit;
-    Label9: TLabel;
+    StatusBar1: TStatusBar;
     procedure FormCreate(Sender: TObject);
     procedure ComboBoxStructureChange(Sender: TObject);
     procedure ComboBoxModeChange(Sender: TObject);
@@ -73,6 +74,8 @@ var
   QueueArray: TArrayPriorityQueue;
   RowTemp: Integer;
   Mode: TOperatingMode = TOperatingMode.omDemo;
+  questionsCount: Integer = 0;
+  correctAnswer: Integer = 0;
 
 implementation
 
@@ -105,7 +108,9 @@ begin
     else
     begin
       if ListArray.GetCount = 0 then
-        ButtonAddFirst.Enabled := true;
+        ButtonAddFirst.Enabled := true
+      else
+        ButtonAddFirst.Enabled := false;
       if ListArray.GetCount > 0 then
       begin
         ButtonAddAfter.Enabled := true;
@@ -238,6 +243,9 @@ begin
     ListArray.NextStep;
     if ListArray.IsMove then
       Inc(RowTemp);
+    if ListArray.Mode = omControl then
+      if not UTest.IsCorrect then
+        ListBox.Items[ListBox.ItemIndex + 1] := 'Ошибка! Правильно: ';
   end;
   if Assigned(QueueArray) then
   begin
@@ -252,84 +260,45 @@ begin
     QueueArray.NextStep;
     if QueueArray.IsMove then
       Inc(RowTemp);
+    if QueueArray.Mode = omControl then
+      if not UTest.IsCorrect then
+        ListBox.Items[ListBox.ItemIndex + 1] := 'Ошибка! Правильно: ';
   end;
+
 end;
 
 procedure TFormMain.ButtonAddClick(Sender: TObject);
 var
-  sID, sPriority: string;
-  iID, iPriority: Integer;
   Item: TPriorityQueueItem;
 begin
-  // перехватим конверсионные ошибки
-  // try
-  // sID := InputBox('Добавление нового элемента',
-  // 'Введите идентификатор нового элемента', '5');
-  //
-  // Trim(sID);
-  // iID := StrToInt(sID);
-  //
-  // sPriority := InputBox('Добавление нового элемента',
-  // 'Введите приоритет', '3');
-  //
-  // Trim(sPriority);
-  // iPriority := StrToInt(sPriority);
+  if QueueArray.Contains(SpinEditID.Value) then
+  begin
+    MessageDlg('Ошибка! Приоритетная очередь уже содержит ключ: ' +
+      SpinEditID.Value.ToString, mtError, mbOKCancel, 0);
+    exit;
+  end;
 
   Item := TPriorityQueueItem.Create(SpinEditID.Value, SpinEditPriority.Value);
   QueueArray.Add(Item);
 
   Inc(RowTemp);
-  // except
-  // on Exception: EConvertError do
-  // ShowMessage(Exception.Message);
-  // end;
 end;
 
 procedure TFormMain.ButtonAddAfterClick(Sender: TObject);
-var
-  sNewValue, sAfterValue: string;
-  iNewValue, iAfterValue: Integer;
 begin
-  // перехватим конверсионные ошибки
-  // try
-  // sNewValue := InputBox('Добавление нового элемента',
-  // 'Введите номер нового эламента', '5');
-  //
-  // Trim(sNewValue);
-  // iNewValue := StrToInt(sNewValue);
-  //
-  // sAfterValue := InputBox('Добавление нового элемента',
-  // 'После какого добавить', '10');
-  //
-  // Trim(sAfterValue);
-  // iAfterValue := StrToInt(sAfterValue);
+  if ListArray.Contains(SpinEditListID1.Value) then
+  begin
+    MessageDlg('Ошибка! Список уже содержит ключ: ' +
+      SpinEditListID1.Value.ToString, mtError, mbOKCancel, 0);
+    exit;
+  end;
 
   ListArray.AddAfter(SpinEditListID1.Value, SpinEditListID2.Value);
   Inc(RowTemp);
-  // except
-  // on Exception: EConvertError do
-  // ShowMessage(Exception.Message);
-  // end;
 end;
 
 procedure TFormMain.ButtonAddFirstClick(Sender: TObject);
-var
-  sValue: string;
-  iValue: Integer;
 begin
-  // sValue := InputBox('Добавление нового элемента', 'Введите номер', '5');
-  //
-  // // перехватим конверсионные ошибки
-  // try
-  // Trim(sValue);
-  // iValue := StrToInt(sValue);
-  //
-  // ListArray.AddFirst(iValue);
-  // Inc(RowTemp);
-  // except
-  // on Exception: EConvertError do
-  // ShowMessage(Exception.Message);
-  // end;
   ListArray.AddFirst(SpinEditListID1.Value);
   Inc(RowTemp);
 end;
@@ -347,52 +316,25 @@ begin
 end;
 
 procedure TFormMain.ButtonDeleteClick(Sender: TObject);
-var
-  sValue: string;
-  iValue: Integer;
 begin
-  // sValue := InputBox('Удаление элемента', 'Введите номер', '5');
-  // // перехватим конверсионные ошибки
-  // try
-  // Trim(sValue);
-  // iValue := StrToInt(sValue);
-  //
   if Assigned(ListArray) then
     ListArray.Delete(SpinEditListID1.Value);
   if Assigned(QueueArray) then
     QueueArray.Delete();
   Inc(RowTemp);
-  // except
-  // on Exception: EConvertError do
-  // ShowMessage(Exception.Message);
-  // end;
 end;
 
 procedure TFormMain.ButtonAddBeforeClick(Sender: TObject);
-var
-  sNewValue, sBeforeValue: string;
-  iNewValue, iBeforeValue: Integer;
 begin
-  // перехватим конверсионные ошибки
-  // try
-  // sNewValue := InputBox('Добавление нового элемента',
-  // 'Введите номер нового эламента', '5');
-  //
-  // Trim(sNewValue);
-  // iNewValue := StrToInt(sNewValue);
-  //
-  // sBeforeValue := InputBox('Добавление нового элемента',
-  // 'Перед каким добавить', '10');
-  //
-  // Trim(sBeforeValue);
-  // iBeforeValue := StrToInt(sBeforeValue);
+  if ListArray.Contains(SpinEditListID1.Value) then
+  begin
+    MessageDlg('Ошибка! Список уже содержит ключ: ' +
+      SpinEditListID1.Value.ToString, mtError, mbOKCancel, 0);
+    exit;
+  end;
 
   ListArray.AddBefore(SpinEditListID1.Value, SpinEditListID2.Value);
   Inc(RowTemp);
-  // except
-  // on Exception: EConvertError do
-  // ShowMessage(Exception.Message);
-  // end;
 end;
 
 // смена структуры
@@ -461,6 +403,7 @@ begin
         PanelListArray.Visible := true;
         PanelPriorityQueue.Visible := false;
         QueueArray := nil;
+
       end;
     1:
       begin
@@ -502,6 +445,10 @@ begin
   StringGrid2.Selection := myRect;
   MyStringGrid.Selection := myRect;
 
+  if Mode = omControl then
+    StatusBar1.Visible := true
+  else
+    StatusBar1.Visible := false;
   Updater();
 end;
 

@@ -12,7 +12,7 @@ type
   TFormTest = class(TForm)
     Panel1: TPanel;
     Button1: TButton;
-    ListBox: TListBox;
+    ListBoxAnswer: TListBox;
     procedure Button1Click(Sender: TObject);
     procedure Load();
 
@@ -25,6 +25,7 @@ type
 var
   FormTest: TFormTest;
   rIndex: integer;
+  IsCorrect: boolean;
 
 implementation
 
@@ -34,13 +35,23 @@ uses UMain;
 
 procedure TFormTest.Button1Click(Sender: TObject);
 begin
-  if ListBox.ItemIndex < 0 then
+  if ListBoxAnswer.ItemIndex < 0 then
     exit;
-
-  if ListBox.ItemIndex = rIndex then
-    ShowMessage('верно')
+  Inc(UMain.questionsCount);
+  if ListBoxAnswer.ItemIndex = rIndex then
+  begin
+    Inc(UMain.correctAnswer);
+    IsCorrect := true;
+  end
+  // ShowMessage('верно')
   else
-    ShowMessage('неверно');
+    IsCorrect := false;
+  // FormMain.ListBox.Items[FormMain.ListBox.ItemIndex]
+  // .Insert(2, 'ќшибка! ѕравильно: ');
+  // ShowMessage('неверно');
+
+  FormMain.StatusBar1.Panels[1].Text := UMain.correctAnswer.ToString + ' из ' +
+    UMain.questionsCount.ToString;
   close;
 end;
 
@@ -51,7 +62,7 @@ var
   UniqueAnswer: TList<integer>;
   // вспомогательный список дл€ хранени€ уникальных индекссов ответов
 begin
-  ListBox.Clear;
+  ListBoxAnswer.Clear;
   Randomize;
 
   if Assigned(ListArray) then
@@ -73,10 +84,12 @@ begin
 
           for i := 0 to 3 do
           begin
-            ListBox.Items.Add(AddAnswers[UniqueAnswer.Items[i]]);
+            ListBoxAnswer.Items.Add
+              (UArrayList.AddAnswers[UniqueAnswer.Items[i]]);
           end;
           rIndex := Random(4);
-          ListBox.Items[rIndex] := AddAnswers[ListArray.AnswerKey];
+          ListBoxAnswer.Items[rIndex] := UArrayList.AddAnswers
+            [ListArray.AnswerKey];
         end;
       lsDelete:
         begin
@@ -92,10 +105,10 @@ begin
 
           for i := 0 to 3 do
           begin
-            ListBox.Items.Add(DeleteAnswers[UniqueAnswer.Items[i]]);
+            ListBoxAnswer.Items.Add(DeleteAnswers[UniqueAnswer.Items[i]]);
           end;
           rIndex := Random(4);
-          ListBox.Items[rIndex] := DeleteAnswers[ListArray.AnswerKey];
+          ListBoxAnswer.Items[rIndex] := DeleteAnswers[ListArray.AnswerKey];
         end;
     end;
   end;
@@ -118,10 +131,10 @@ begin
 
           for i := 0 to 3 do
           begin
-            ListBox.Items.Add(AddAnswers[UniqueAnswer.Items[i]]);
+            ListBoxAnswer.Items.Add(AddAnswers[UniqueAnswer.Items[i]]);
           end;
           rIndex := Random(4);
-          ListBox.Items[rIndex] := AddAnswers[QueueArray.AnswerKey];
+          ListBoxAnswer.Items[rIndex] := AddAnswers[QueueArray.AnswerKey];
         end;
       pqsDelete:
         begin
@@ -137,10 +150,10 @@ begin
 
           for i := 0 to 3 do
           begin
-            ListBox.Items.Add(DeleteAnswers[UniqueAnswer.Items[i]]);
+            ListBoxAnswer.Items.Add(DeleteAnswers[UniqueAnswer.Items[i]]);
           end;
           rIndex := Random(4);
-          ListBox.Items[rIndex] := DeleteAnswers[QueueArray.AnswerKey];
+          ListBoxAnswer.Items[rIndex] := DeleteAnswers[QueueArray.AnswerKey];
         end;
     end;
   end;
