@@ -164,7 +164,7 @@ object FormMain: TFormMain
         #1053#1077#1091#1087#1086#1088#1103#1076#1086#1095#1077#1085#1085#1099#1081' '#1089#1087#1080#1089#1086#1082
         #1059#1087#1086#1088#1103#1076#1086#1095#1077#1085#1085#1099#1081' '#1089#1087#1080#1089#1086#1082)
     end
-    object Panel3: TPanel
+    object PanelListArray: TPanel
       Left = 8
       Top = 501
       Width = 289
@@ -236,15 +236,6 @@ object FormMain: TFormMain
         TabOrder = 5
         OnClick = ButtonCleanClick
       end
-      object ButtonAdd: TButton
-        Left = 159
-        Top = 82
-        Width = 112
-        Height = 25
-        Caption = #1044#1086#1073#1072#1074#1080#1090#1100
-        TabOrder = 6
-        OnClick = ButtonAddClick
-      end
     end
     object ComboBoxMode: TComboBox
       Left = 8
@@ -307,6 +298,59 @@ object FormMain: TFormMain
       Font.Style = []
       ParentFont = False
       TabOrder = 6
+    end
+    object PanelPriorityQueue: TPanel
+      Left = 8
+      Top = 501
+      Width = 289
+      Height = 153
+      TabOrder = 7
+      object ButtonDelete2: TButton
+        Left = 15
+        Top = 46
+        Width = 112
+        Height = 25
+        Caption = #1059#1076#1072#1083#1080#1090#1100
+        Enabled = False
+        TabOrder = 0
+        OnClick = ButtonDeleteClick
+      end
+      object ButtonNext2: TBitBtn
+        Left = 159
+        Top = 113
+        Width = 112
+        Height = 25
+        Caption = '>>'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        Kind = bkYes
+        NumGlyphs = 2
+        ParentFont = False
+        TabOrder = 1
+        OnClick = ButtonNextClick
+      end
+      object ButtonClean2: TButton
+        Left = 15
+        Top = 77
+        Width = 112
+        Height = 25
+        Caption = #1054#1095#1080#1089#1090#1080#1090#1100
+        Enabled = False
+        TabOrder = 2
+        OnClick = ButtonCleanClick
+      end
+      object ButtonAdd: TButton
+        Left = 15
+        Top = 15
+        Width = 112
+        Height = 25
+        Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+        TabOrder = 3
+        OnClick = ButtonAddClick
+      end
     end
   end
 end

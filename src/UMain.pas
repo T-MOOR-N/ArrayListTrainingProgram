@@ -13,7 +13,7 @@ type
   TFormMain = class(TForm)
     Panel1: TPanel;
     Panel2: TPanel;
-    Panel3: TPanel;
+    PanelListArray: TPanel;
     ComboBoxMode: TComboBox;
     ComboBoxStructure: TComboBox;
     Label1: TLabel;
@@ -30,6 +30,10 @@ type
     StringGrid2: TStringGrid;
     ListBox: TListBox;
     ButtonClean: TButton;
+    PanelPriorityQueue: TPanel;
+    ButtonDelete2: TButton;
+    ButtonNext2: TBitBtn;
+    ButtonClean2: TButton;
     ButtonAdd: TButton;
     procedure FormCreate(Sender: TObject);
     procedure ComboBoxStructureChange(Sender: TObject);
@@ -71,7 +75,6 @@ var
 begin
   if Assigned(ListArray) then
   begin
-    ButtonAdd.Enabled := false;
     ButtonAddFirst.Enabled := true;
 
     ListBox.ItemIndex := ListBox.Items.Count - 1;
@@ -116,9 +119,6 @@ begin
 
   if Assigned(QueueArray) then
   begin
-    ButtonAddAfter.Enabled := false;
-    ButtonAddFirst.Enabled := false;
-    ButtonAddBefore.Enabled := false;
 
     ButtonAdd.Enabled := true;
     ListBox.ItemIndex := ListBox.Items.Count - 1;
@@ -132,25 +132,25 @@ begin
     if not(QueueArray.State = pqsNormal) then
     begin
       ButtonAdd.Enabled := false;
-      ButtonDelete.Enabled := false;
-      ButtonNext.Enabled := true;
+      ButtonDelete2.Enabled := false;
+      ButtonNext2.Enabled := true;
     end
     else
     begin
       if QueueArray.GetCount = 0 then
       begin
-        ButtonDelete.Enabled := false;
-        ButtonNext.Enabled := false;
+        ButtonDelete2.Enabled := false;
+        ButtonNext2.Enabled := false;
       end;
       if QueueArray.GetCount > 0 then
       begin
         ButtonAdd.Enabled := true;
-        ButtonDelete.Enabled := true;
+        ButtonDelete2.Enabled := true;
 
-        ButtonNext.Enabled := false;
+        ButtonNext2.Enabled := false;
       end;
-      if ButtonNext.CanFocus then
-        ButtonNext.SetFocus;
+      if ButtonNext2.CanFocus then
+        ButtonNext2.SetFocus;
 
       // костыль дл€ восстановлени€ цвета €чеек
       if QueueArray.State = pqsNormal then
@@ -449,6 +449,8 @@ begin
         // подписываемс€ на событие ThreadSyspended
         ListArray.OnThreadSyspended := OnThreadSyspended;
 
+        PanelListArray.Visible := true;
+        PanelPriorityQueue.Visible := false;
         QueueArray := nil;
       end;
     1:
@@ -459,6 +461,8 @@ begin
         // подписываемс€ на событие ThreadSyspended
         QueueArray.OnThreadSyspended := OnThreadSyspended;
 
+        PanelListArray.Visible := false;
+        PanelPriorityQueue.Visible := true;
         ListArray := nil;
       end;
   end;
