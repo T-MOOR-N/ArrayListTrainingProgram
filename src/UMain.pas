@@ -7,7 +7,8 @@ uses
   System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Grids, Vcl.ExtCtrls,
   Vcl.Menus, Vcl.Buttons, Vcl.Imaging.pngimage, Vcl.XPMan, UArrayList, WinProcs,
-  UTest, UArrayPriorityQueue, UPriorityQueueItem, UEnumerations;
+  UTest, UArrayPriorityQueue, UPriorityQueueItem, UEnumerations,
+  Vcl.Samples.Spin;
 
 type
   TFormMain = class(TForm)
@@ -35,6 +36,14 @@ type
     ButtonNext2: TBitBtn;
     ButtonClean2: TButton;
     ButtonAdd: TButton;
+    SpinEditListID1: TSpinEdit;
+    SpinEditPriority: TSpinEdit;
+    SpinEditID: TSpinEdit;
+    Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    SpinEditListID2: TSpinEdit;
+    Label9: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure ComboBoxStructureChange(Sender: TObject);
     procedure ComboBoxModeChange(Sender: TObject);
@@ -253,27 +262,27 @@ var
   Item: TPriorityQueueItem;
 begin
   // перехватим конверсионные ошибки
-  try
-    sID := InputBox('Добавление нового элемента',
-      'Введите идентификатор нового элемента', '5');
+  // try
+  // sID := InputBox('Добавление нового элемента',
+  // 'Введите идентификатор нового элемента', '5');
+  //
+  // Trim(sID);
+  // iID := StrToInt(sID);
+  //
+  // sPriority := InputBox('Добавление нового элемента',
+  // 'Введите приоритет', '3');
+  //
+  // Trim(sPriority);
+  // iPriority := StrToInt(sPriority);
 
-    Trim(sID);
-    iID := StrToInt(sID);
+  Item := TPriorityQueueItem.Create(SpinEditID.Value, SpinEditPriority.Value);
+  QueueArray.Add(Item);
 
-    sPriority := InputBox('Добавление нового элемента',
-      'Введите приоритет', '3');
-
-    Trim(sPriority);
-    iPriority := StrToInt(sPriority);
-
-    Item := TPriorityQueueItem.Create(iID, iPriority);
-    QueueArray.Add(Item);
-
-    Inc(RowTemp);
-  except
-    on Exception: EConvertError do
-      ShowMessage(Exception.Message);
-  end;
+  Inc(RowTemp);
+  // except
+  // on Exception: EConvertError do
+  // ShowMessage(Exception.Message);
+  // end;
 end;
 
 procedure TFormMain.ButtonAddAfterClick(Sender: TObject);
@@ -282,26 +291,25 @@ var
   iNewValue, iAfterValue: Integer;
 begin
   // перехватим конверсионные ошибки
-  try
-    sNewValue := InputBox('Добавление нового элемента',
-      'Введите номер нового эламента', '5');
+  // try
+  // sNewValue := InputBox('Добавление нового элемента',
+  // 'Введите номер нового эламента', '5');
+  //
+  // Trim(sNewValue);
+  // iNewValue := StrToInt(sNewValue);
+  //
+  // sAfterValue := InputBox('Добавление нового элемента',
+  // 'После какого добавить', '10');
+  //
+  // Trim(sAfterValue);
+  // iAfterValue := StrToInt(sAfterValue);
 
-    Trim(sNewValue);
-    iNewValue := StrToInt(sNewValue);
-
-    sAfterValue := InputBox('Добавление нового элемента',
-      'После какого добавить', '10');
-
-    Trim(sAfterValue);
-    iAfterValue := StrToInt(sAfterValue);
-
-    ListArray.AddAfter(iNewValue, iAfterValue);
-
-    Inc(RowTemp);
-  except
-    on Exception: EConvertError do
-      ShowMessage(Exception.Message);
-  end;
+  ListArray.AddAfter(SpinEditListID1.Value, SpinEditListID2.Value);
+  Inc(RowTemp);
+  // except
+  // on Exception: EConvertError do
+  // ShowMessage(Exception.Message);
+  // end;
 end;
 
 procedure TFormMain.ButtonAddFirstClick(Sender: TObject);
@@ -309,19 +317,21 @@ var
   sValue: string;
   iValue: Integer;
 begin
-  sValue := InputBox('Добавление нового элемента', 'Введите номер', '5');
-
-  // перехватим конверсионные ошибки
-  try
-    Trim(sValue);
-    iValue := StrToInt(sValue);
-
-    ListArray.AddFirst(iValue);
-    Inc(RowTemp);
-  except
-    on Exception: EConvertError do
-      ShowMessage(Exception.Message);
-  end;
+  // sValue := InputBox('Добавление нового элемента', 'Введите номер', '5');
+  //
+  // // перехватим конверсионные ошибки
+  // try
+  // Trim(sValue);
+  // iValue := StrToInt(sValue);
+  //
+  // ListArray.AddFirst(iValue);
+  // Inc(RowTemp);
+  // except
+  // on Exception: EConvertError do
+  // ShowMessage(Exception.Message);
+  // end;
+  ListArray.AddFirst(SpinEditListID1.Value);
+  Inc(RowTemp);
 end;
 
 procedure TFormMain.ButtonCleanClick(Sender: TObject);
@@ -341,21 +351,21 @@ var
   sValue: string;
   iValue: Integer;
 begin
-  sValue := InputBox('Удаление элемента', 'Введите номер', '5');
-  // перехватим конверсионные ошибки
-  try
-    Trim(sValue);
-    iValue := StrToInt(sValue);
-
-    if Assigned(ListArray) then
-      ListArray.Delete(iValue);
-    if Assigned(QueueArray) then
-      QueueArray.Delete();
-    Inc(RowTemp);
-  except
-    on Exception: EConvertError do
-      ShowMessage(Exception.Message);
-  end;
+  // sValue := InputBox('Удаление элемента', 'Введите номер', '5');
+  // // перехватим конверсионные ошибки
+  // try
+  // Trim(sValue);
+  // iValue := StrToInt(sValue);
+  //
+  if Assigned(ListArray) then
+    ListArray.Delete(SpinEditListID1.Value);
+  if Assigned(QueueArray) then
+    QueueArray.Delete();
+  Inc(RowTemp);
+  // except
+  // on Exception: EConvertError do
+  // ShowMessage(Exception.Message);
+  // end;
 end;
 
 procedure TFormMain.ButtonAddBeforeClick(Sender: TObject);
@@ -364,26 +374,25 @@ var
   iNewValue, iBeforeValue: Integer;
 begin
   // перехватим конверсионные ошибки
-  try
-    sNewValue := InputBox('Добавление нового элемента',
-      'Введите номер нового эламента', '5');
+  // try
+  // sNewValue := InputBox('Добавление нового элемента',
+  // 'Введите номер нового эламента', '5');
+  //
+  // Trim(sNewValue);
+  // iNewValue := StrToInt(sNewValue);
+  //
+  // sBeforeValue := InputBox('Добавление нового элемента',
+  // 'Перед каким добавить', '10');
+  //
+  // Trim(sBeforeValue);
+  // iBeforeValue := StrToInt(sBeforeValue);
 
-    Trim(sNewValue);
-    iNewValue := StrToInt(sNewValue);
-
-    sBeforeValue := InputBox('Добавление нового элемента',
-      'Перед каким добавить', '10');
-
-    Trim(sBeforeValue);
-    iBeforeValue := StrToInt(sBeforeValue);
-
-    ListArray.AddBefore(iNewValue, iBeforeValue);
-
-    Inc(RowTemp);
-  except
-    on Exception: EConvertError do
-      ShowMessage(Exception.Message);
-  end;
+  ListArray.AddBefore(SpinEditListID1.Value, SpinEditListID2.Value);
+  Inc(RowTemp);
+  // except
+  // on Exception: EConvertError do
+  // ShowMessage(Exception.Message);
+  // end;
 end;
 
 // смена структуры

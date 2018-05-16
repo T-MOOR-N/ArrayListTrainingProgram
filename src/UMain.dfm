@@ -1,6 +1,7 @@
 object FormMain: TFormMain
   Left = 0
   Top = 0
+  ActiveControl = MyStringGrid
   BorderStyle = bsSingle
   Caption = #1058#1088#1077#1085#1072#1078#1077#1088#1085#1072#1103' '#1087#1088#1086#1075#1088#1072#1084#1084#1072
   ClientHeight = 718
@@ -166,13 +167,27 @@ object FormMain: TFormMain
     end
     object PanelListArray: TPanel
       Left = 8
-      Top = 501
+      Top = 517
       Width = 289
-      Height = 153
+      Height = 196
       TabOrder = 3
-      object ButtonAddAfter: TButton
+      object Label8: TLabel
         Left = 17
-        Top = 82
+        Top = 13
+        Width = 82
+        Height = 13
+        Caption = #1048#1076#1077#1085#1090#1080#1092#1080#1082#1072#1090#1086#1088
+      end
+      object Label9: TLabel
+        Left = 159
+        Top = 13
+        Width = 67
+        Height = 13
+        Caption = #1057#1086#1089#1077#1076#1085#1080#1081' '#1048#1044
+      end
+      object ButtonAddAfter: TButton
+        Left = 159
+        Top = 91
         Width = 112
         Height = 25
         Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1087#1086#1089#1083#1077
@@ -182,7 +197,7 @@ object FormMain: TFormMain
       end
       object ButtonAddFirst: TButton
         Left = 17
-        Top = 20
+        Top = 60
         Width = 112
         Height = 25
         Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1087#1077#1088#1074#1099#1081
@@ -190,8 +205,8 @@ object FormMain: TFormMain
         OnClick = ButtonAddFirstClick
       end
       object ButtonAddBefore: TButton
-        Left = 17
-        Top = 51
+        Left = 159
+        Top = 60
         Width = 112
         Height = 25
         Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1087#1077#1088#1077#1076
@@ -201,7 +216,7 @@ object FormMain: TFormMain
       end
       object ButtonDelete: TButton
         Left = 17
-        Top = 113
+        Top = 91
         Width = 112
         Height = 25
         Caption = #1059#1076#1072#1083#1080#1090#1100
@@ -211,7 +226,7 @@ object FormMain: TFormMain
       end
       object ButtonNext: TBitBtn
         Left = 159
-        Top = 113
+        Top = 153
         Width = 112
         Height = 25
         Caption = '>>'
@@ -227,14 +242,34 @@ object FormMain: TFormMain
         OnClick = ButtonNextClick
       end
       object ButtonClean: TButton
-        Left = 159
-        Top = 20
+        Left = 17
+        Top = 153
         Width = 112
         Height = 25
         Caption = #1054#1095#1080#1089#1090#1080#1090#1100
         Enabled = False
         TabOrder = 5
         OnClick = ButtonCleanClick
+      end
+      object SpinEditListID1: TSpinEdit
+        Left = 17
+        Top = 32
+        Width = 112
+        Height = 22
+        MaxValue = 99
+        MinValue = 1
+        TabOrder = 6
+        Value = 1
+      end
+      object SpinEditListID2: TSpinEdit
+        Left = 159
+        Top = 32
+        Width = 112
+        Height = 22
+        MaxValue = 99
+        MinValue = 1
+        TabOrder = 7
+        Value = 1
       end
     end
     object ComboBoxMode: TComboBox
@@ -288,7 +323,7 @@ object FormMain: TFormMain
     end
     object ListBox: TListBox
       Left = 316
-      Top = 138
+      Top = 141
       Width = 685
       Height = 516
       Font.Charset = DEFAULT_CHARSET
@@ -300,14 +335,28 @@ object FormMain: TFormMain
       TabOrder = 6
     end
     object PanelPriorityQueue: TPanel
-      Left = 8
-      Top = 501
+      Left = 303
+      Top = 528
       Width = 289
-      Height = 153
+      Height = 183
       TabOrder = 7
+      object Label6: TLabel
+        Left = 17
+        Top = 16
+        Width = 82
+        Height = 13
+        Caption = #1048#1076#1077#1085#1090#1080#1092#1080#1082#1072#1090#1086#1088
+      end
+      object Label7: TLabel
+        Left = 17
+        Top = 64
+        Width = 55
+        Height = 13
+        Caption = #1055#1088#1080#1086#1088#1080#1090#1077#1090
+      end
       object ButtonDelete2: TButton
-        Left = 15
-        Top = 46
+        Left = 159
+        Top = 62
         Width = 112
         Height = 25
         Caption = #1059#1076#1072#1083#1080#1090#1100
@@ -317,7 +366,7 @@ object FormMain: TFormMain
       end
       object ButtonNext2: TBitBtn
         Left = 159
-        Top = 113
+        Top = 144
         Width = 112
         Height = 25
         Caption = '>>'
@@ -333,8 +382,8 @@ object FormMain: TFormMain
         OnClick = ButtonNextClick
       end
       object ButtonClean2: TButton
-        Left = 15
-        Top = 77
+        Left = 17
+        Top = 144
         Width = 112
         Height = 25
         Caption = #1054#1095#1080#1089#1090#1080#1090#1100
@@ -343,13 +392,33 @@ object FormMain: TFormMain
         OnClick = ButtonCleanClick
       end
       object ButtonAdd: TButton
-        Left = 15
-        Top = 15
+        Left = 159
+        Top = 31
         Width = 112
         Height = 25
         Caption = #1044#1086#1073#1072#1074#1080#1090#1100
         TabOrder = 3
         OnClick = ButtonAddClick
+      end
+      object SpinEditPriority: TSpinEdit
+        Left = 17
+        Top = 83
+        Width = 104
+        Height = 22
+        MaxValue = 3
+        MinValue = 1
+        TabOrder = 4
+        Value = 1
+      end
+      object SpinEditID: TSpinEdit
+        Left = 17
+        Top = 35
+        Width = 104
+        Height = 22
+        MaxValue = 99
+        MinValue = 1
+        TabOrder = 5
+        Value = 0
       end
     end
   end
