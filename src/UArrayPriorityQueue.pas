@@ -62,7 +62,7 @@ type
 
 var
   AddAnswers: array [0 .. 6] of string;
-  DeleteAnswers: array [0 .. 6] of string;
+  DeleteAnswers: array [0 .. 4] of string;
   allowmessage: boolean;
 
 implementation
@@ -293,8 +293,6 @@ begin
 end;
 
 procedure TArrayPriorityQueue.DeleteTask();
-var
-  i, j: integer;
 begin
   CritSec.Enter;
 
@@ -310,13 +308,13 @@ begin
   end;
   AddMessage(step.ToString + ') Проверка возможности удаления: ОК;');
 
-  AnswerKey := 4;
+  AnswerKey := 1;
   Pause();
-  AddMessage(step.ToString + ') Извлечь элемент из приориттной очереди: [' +
+  AddMessage(step.ToString + ') Извлечь элемент из приоритетной очереди: [' +
     Count.ToString + '] => ' + SearchItem.ToString + ';');
   Items[Count] := nil;
 
-  AnswerKey := 6;
+  AnswerKey := 4;
   Pause();
   AddMessage(step.ToString + ') Уменьшение COUNT на 1:' + ' COUNT = ' +
     Count.ToString + ' - 1 = ' + (Count - 1).ToString + ';');

@@ -11,6 +11,7 @@ object FormTest: TFormTest
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poMainFormCenter
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel

@@ -37,21 +37,75 @@ procedure TFormTest.Button1Click(Sender: TObject);
 begin
   if ListBoxAnswer.ItemIndex < 0 then
     exit;
-  Inc(UMain.questionsCount);
+  Inc(UMain.AllquestionsCount);
+
   if ListBoxAnswer.ItemIndex = rIndex then
   begin
-    Inc(UMain.correctAnswer);
+    if Assigned(ListArray) then
+    begin
+      case ListArray.State of
+        lsAddbefore:
+          begin
+            Inc(AddBeforeÑorrectAnswer);
+            Inc(AddBeforeQuestionsCount);
+          end;
+        lsAddAfter, lsAddFirst:
+          begin
+            Inc(AddAfterÑorrectAnswer);
+            Inc(AddAfterquestionsCount);
+          end;
+        lsDelete:
+          begin
+            Inc(DeleteCorrectAnswer);
+            Inc(DeleteQuestionsCount);
+          end;
+      end;
+    end;
+    if Assigned(QueueArray) then
+    begin
+      case QueueArray.State of
+        pqsAdd:
+          begin
+            Inc(AddÑorrectAnswer);
+            Inc(AddQuestionsCount);
+          end;
+        pqsDelete:
+          begin
+            Inc(DeleteCorrectAnswer);
+            Inc(DeleteQuestionsCount);
+          end;
+      end;
+    end;
+    Inc(UMain.AllcorrectAnswer);
     IsCorrect := true;
   end
   // ShowMessage('âåðíî')
   else
+  begin
     IsCorrect := false;
-  // FormMain.ListBox.Items[FormMain.ListBox.ItemIndex]
-  // .Insert(2, 'Îøèáêà! Ïðàâèëüíî: ');
-  // ShowMessage('íåâåðíî');
-
-  FormMain.StatusBar1.Panels[1].Text := UMain.correctAnswer.ToString + ' èç ' +
-    UMain.questionsCount.ToString;
+    if Assigned(ListArray) then
+    begin
+      case ListArray.State of
+        lsAddbefore:
+          Inc(AddBeforeQuestionsCount);
+        lsAddAfter:
+          Inc(AddAfterquestionsCount);
+        lsDelete:
+          Inc(DeleteQuestionsCount);
+      end;
+    end;
+    if Assigned(QueueArray) then
+    begin
+      case QueueArray.State of
+        pqsAdd:
+          Inc(AddQuestionsCount);
+        pqsDelete:
+          Inc(DeleteQuestionsCount);
+      end;
+    end;
+  end;
+  FormMain.StatusBar1.Panels[1].Text := UMain.AllcorrectAnswer.ToString + ' èç '
+    + UMain.AllquestionsCount.ToString;
   close;
 end;
 
@@ -105,10 +159,12 @@ begin
 
           for i := 0 to 3 do
           begin
-            ListBoxAnswer.Items.Add(DeleteAnswers[UniqueAnswer.Items[i]]);
+            ListBoxAnswer.Items.Add(UArrayList.DeleteAnswers
+              [UniqueAnswer.Items[i]]);
           end;
           rIndex := Random(4);
-          ListBoxAnswer.Items[rIndex] := DeleteAnswers[ListArray.AnswerKey];
+          ListBoxAnswer.Items[rIndex] := UArrayList.DeleteAnswers
+            [ListArray.AnswerKey];
         end;
     end;
   end;
@@ -131,10 +187,12 @@ begin
 
           for i := 0 to 3 do
           begin
-            ListBoxAnswer.Items.Add(AddAnswers[UniqueAnswer.Items[i]]);
+            ListBoxAnswer.Items.Add(UArrayPriorityQueue.AddAnswers
+              [UniqueAnswer.Items[i]]);
           end;
           rIndex := Random(4);
-          ListBoxAnswer.Items[rIndex] := AddAnswers[QueueArray.AnswerKey];
+          ListBoxAnswer.Items[rIndex] := UArrayPriorityQueue.AddAnswers
+            [QueueArray.AnswerKey];
         end;
       pqsDelete:
         begin
@@ -150,10 +208,12 @@ begin
 
           for i := 0 to 3 do
           begin
-            ListBoxAnswer.Items.Add(DeleteAnswers[UniqueAnswer.Items[i]]);
+            ListBoxAnswer.Items.Add(UArrayPriorityQueue.DeleteAnswers
+              [UniqueAnswer.Items[i]]);
           end;
           rIndex := Random(4);
-          ListBoxAnswer.Items[rIndex] := DeleteAnswers[QueueArray.AnswerKey];
+          ListBoxAnswer.Items[rIndex] := UArrayPriorityQueue.DeleteAnswers
+            [QueueArray.AnswerKey];
         end;
     end;
   end;

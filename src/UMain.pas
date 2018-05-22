@@ -61,6 +61,7 @@ type
     procedure ButtonCleanClick(Sender: TObject);
     procedure ComboBoxModeSelect(Sender: TObject);
     procedure ButtonAddClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
 
   private
     { Private declarations }
@@ -74,12 +75,43 @@ var
   QueueArray: TArrayPriorityQueue;
   RowTemp: Integer;
   Mode: TOperatingMode = TOperatingMode.omDemo;
-  questionsCount: Integer = 0;
-  correctAnswer: Integer = 0;
+
+  // блок переменных для хранения статистики
+  // по всем вопросам
+  AddQuestionsCount: Integer = 0;
+  AddAfterquestionsCount: Integer = 0;
+  AddBeforeQuestionsCount: Integer = 0;
+  DeleteQuestionsCount: Integer = 0;
+  AllQuestionsCount: Integer = 0;
+
+  // по верным ответам
+  AddСorrectAnswer: Integer = 0;
+  AddAfterСorrectAnswer: Integer = 0;
+  AddBeforeСorrectAnswer: Integer = 0;
+  DeleteCorrectAnswer: Integer = 0;
+  AllcorrectAnswer: Integer = 0;
 
 implementation
 
 {$R *.dfm}
+
+uses UStatistics;
+
+procedure ResetCounters;
+begin
+  AddСorrectAnswer := 0;
+  AddAfterСorrectAnswer := 0;
+  AddBeforeСorrectAnswer := 0;
+  DeleteCorrectAnswer := 0;
+  AllcorrectAnswer := 0;
+
+  AddQuestionsCount := 0;
+  AddAfterquestionsCount := 0;
+  AddBeforeQuestionsCount := 0;
+  DeleteQuestionsCount := 0;
+  AllQuestionsCount := 0;
+
+end;
 
 procedure TFormMain.Updater();
 var
@@ -271,13 +303,6 @@ procedure TFormMain.ButtonAddClick(Sender: TObject);
 var
   Item: TPriorityQueueItem;
 begin
-  if QueueArray.Contains(SpinEditID.Value) then
-  begin
-    MessageDlg('Ошибка! Приоритетная очередь уже содержит ключ: ' +
-      SpinEditID.Value.ToString, mtError, mbOKCancel, 0);
-    exit;
-  end;
-
   Item := TPriorityQueueItem.Create(SpinEditID.Value, SpinEditPriority.Value);
   QueueArray.Add(Item);
 
@@ -380,6 +405,46 @@ begin
   FormCreate(Self);
 end;
 
+procedure TFormMain.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+
+  if Mode <> omControl then
+    exit;
+
+  if Assigned(ListArray) then
+  begin
+    if AddBeforeQuestionsCount > 0 then
+      FormStatistics.ListBoxResult.Items.Add('Вставка ДО в список: верно ' +
+        AddBeforeСorrectAnswer.ToString + ' из ' +
+        AddBeforeQuestionsCount.ToString);
+    if AddAfterquestionsCount > 0 then
+      FormStatistics.ListBoxResult.Items.Add('Вставка После в список: верно ' +
+        AddAfterСorrectAnswer.ToString + ' из ' +
+        AddAfterquestionsCount.ToString);
+    if DeleteQuestionsCount > 0 then
+      FormStatistics.ListBoxResult.Items.Add('Удаление из списка: верно ' +
+        DeleteCorrectAnswer.ToString + ' из ' + DeleteQuestionsCount.ToString);
+  end;
+
+  if Assigned(QueueArray) then
+  begin
+    if AddQuestionsCount > 0 then
+      FormStatistics.ListBoxResult.Items.Add('Вставка в очередь: верно ' +
+        AddСorrectAnswer.ToString + ' из ' + AddQuestionsCount.ToString);
+    if DeleteQuestionsCount > 0 then
+      FormStatistics.ListBoxResult.Items.Add('Удаление из очереди: верно ' +
+        DeleteCorrectAnswer.ToString + ' из ' + DeleteQuestionsCount.ToString);
+  end;
+
+  FormStatistics.ListBoxResult.Items.Add('ИТОГО:');
+  FormStatistics.ListBoxResult.Items.Add('Всего выполнено:' +
+    AllQuestionsCount.ToString);
+  FormStatistics.ListBoxResult.Items.Add('Из них верно:' +
+    AllcorrectAnswer.ToString);
+
+  FormStatistics.ShowModal;
+end;
+
 procedure TFormMain.FormCreate(Sender: TObject);
 var
   myRect: TGridRect;
@@ -390,6 +455,9 @@ begin
   for I := 0 to MyStringGrid.ColCount do
     for J := 0 to MyStringGrid.RowCount do
       MyStringGrid.Cells[I, J] := '';
+
+  // сброс счётчиков статистики
+  ResetCounters;
 
   case ComboBoxStructure.ItemIndex of
     0:

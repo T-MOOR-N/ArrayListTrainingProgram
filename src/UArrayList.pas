@@ -393,32 +393,40 @@ begin
   if j = 0 then
     Finish();
 
-  AnswerKey := 4;
+  AnswerKey := 3;
   Pause();
   AddMessage(step.ToString + ') »звлечь элемент списка: [' + j.ToString +
     '] => ' + SearchItem.ToString + ';');
   Items[j] := -1;
 
-  Pause();
   AnswerKey := 4;
-  AddMessage(step.ToString +
-    ') —двиг €чеек влево: перемещаем влево содержимое €чеек начина€ с €чейки ['
-    + j.ToString + '];');
-
-  IsMove := true;
-  for i := j to Count - 1 do
+  Pause();
+  if j = Count then
   begin
-    AnswerKey := 5;
-    Pause();
+    AddMessage(step.ToString + ') —двиг €чеек влево: не нужен;');
+  end
+  else
+  begin
+
     AddMessage(step.ToString +
-      ') —двиг текущей влево: перемещаем содержимое €чейки [' + (i + 1).ToString
-      + '] в €чейку [' + i.ToString + '];');
+      ') —двиг €чеек влево: перемещаем влево содержимое €чеек начина€ с €чейки ['
+      + j.ToString + '];');
 
-    Items[i] := Items[i + 1];
-    Items[i + 1] := -1;
+    IsMove := true;
+    for i := j to Count - 1 do
+    begin
+      AnswerKey := 5;
+      Pause();
+      AddMessage(step.ToString +
+        ') —двиг текущей влево: перемещаем содержимое €чейки [' + (i + 1)
+        .ToString + '] в €чейку [' + i.ToString + '];');
+
+      Items[i] := Items[i + 1];
+      Items[i + 1] := -1;
+    end;
+    IsMove := false;
+
   end;
-  IsMove := false;
-
   AnswerKey := 6;
   Pause();
   AddMessage(step.ToString + ') ”меньшение COUNT на 1:' + ' COUNT = ' +
